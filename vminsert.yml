@@ -11,8 +11,6 @@ spec:
       protocol: TCP
       port: 8480
       targetPort: 8480
-  externalIPs:
-    - 172.17.0.1
 
 ---
 apiVersion: apps/v1
@@ -22,7 +20,7 @@ metadata:
   labels:
     app: vminsert
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: vminsert
@@ -38,10 +36,18 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-
         - name: vminsert
           image: victoriametrics/vminsert:latest
-          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "0.05"
+              memory: "50Mi"
+              ephemeral-storage: "50Mi"
+            limits:
+              cpu: "0.1"
+              memory: "100Mi"
+              ephemeral-storage: "100Mi"
+          #imagePullPolicy: Always
           ports:
             - containerPort: 8480
           args:

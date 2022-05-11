@@ -61,7 +61,16 @@ spec:
       containers:
         - name: vmagent
           image: victoriametrics/vmagent:latest
-          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "0.05"
+              memory: "50Mi"
+              ephemeral-storage: "100Mi"
+            limits:
+              cpu: "0.05"
+              memory: "50Mi"
+              ephemeral-storage: "100Mi"
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8429
           args:
@@ -69,15 +78,11 @@ spec:
             - '-promscrape.config=/vmagent-conf/prometheus.yml'
           volumeMounts:
             - mountPath: /vmagent-conf
-              name: config-volume
+              name: vmagent-volume
       volumes:
-        - name: config-volume
+        - name: vmagent-volume
           configMap:
             name: prometheus-configuration
-        #- name: vmagent-volume
-        #  hostPath:
-        #    path: /home/monit/volumes/vmagent
-        #    type: Directory
 
 ---
 apiVersion: v1
@@ -88,6 +93,7 @@ metadata:
 data:
   prometheus.yml: |-
     scrape_configs:
+
       - job_name: "kubernetes-pods"
         kubernetes_sd_configs:
           - role: pod

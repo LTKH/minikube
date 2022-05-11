@@ -4,55 +4,84 @@ kind: Service
 metadata:
   name: grafana
 spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
   selector:
     app: grafana
-  ports:
-    - name: grafana
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
-  externalIPs:
-    - 188.225.38.102
+  sessionAffinity: None
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grafana
   labels:
     app: grafana
+  name: grafana
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: grafana
-  strategy:
-    rollingUpdate: 
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
   template:
     metadata:
-      labels: 
+      labels:
         app: grafana
     spec:
       securityContext:
-        runAsUser: 1000
-        fsGroup: 1000
-      #serviceAccountName: default-token
-      #automountServiceAccountToken: false
-      terminationGracePeriodSeconds: 30
+        fsGroup: 472
+        supplementalGroups:
+          - 0
       containers:
         - name: grafana
-          image: grafana/grafana:latest
-          imagePullPolicy: Always
+          image: grafana/grafana:8.5.2
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: grafana-clock-panel,grafana-simple-json-datasource
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
           volumeMounts:
             - mountPath: /var/lib/grafana
-              name: grafana-volume
+              name: grafana-pv
       volumes:
-        - name: grafana-volume
-          hostPath:
-            path: /home/monit/volumes/grafana
-            type: Directory
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc

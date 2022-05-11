@@ -11,8 +11,6 @@ spec:
       protocol: TCP
       port: 8481
       targetPort: 8481
-  externalIPs:
-    - 172.17.0.1
 
 ---
 apiVersion: apps/v1
@@ -22,7 +20,7 @@ metadata:
   labels:
     app: vmselect
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: vmselect
@@ -38,10 +36,18 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-
         - name: vmselect
           image: victoriametrics/vmselect:latest
-          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "0.05"
+              memory: "50Mi"
+              ephemeral-storage: "50Mi"
+            limits:
+              cpu: "0.05"
+              memory: "100Mi"
+              ephemeral-storage: "100Mi"
+          #imagePullPolicy: Always
           ports:
             - containerPort: 8481
           args:

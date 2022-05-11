@@ -48,7 +48,7 @@ spec:
             - name: MYSQL_DATABASE
               value: alerttrap
             - name: MYSQL_ROOT_PASSWORD
-              value: alerttrap
+              value: example
         - name: mysqld-exporter
           image: prom/mysqld-exporter:latest
           imagePullPolicy: Always
@@ -56,6 +56,4 @@ spec:
             - containerPort: 9104
           env:
             - name: DATA_SOURCE_NAME
-              value: root:alerttrap@(localhost:3306)/alerttrap
-          #args:
-          #  - '--network my-mysql-network'
+              value: root:example@(localhost:3306)/alerttrap

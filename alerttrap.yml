@@ -74,14 +74,12 @@ data:
       
       db:
         client:         "mysql"
-        conn_string:    "root:test@(mysql.default.svc.cluster.local)/alerttrap?parseTime=true"
-        #client:         "sqlite3"
-        #conn_string:    "/data/dbase.db"
+        conn_string:    "root:example@(mysql.default.svc.cluster.local)/alerttrap?parseTime=true"
         history_days:   7
 
       security:
         admin_user:     "admin"
-        admin_password: "admin" 
+        admin_password: "password" 
 
     menu:
       - id: "kubernetes"

@@ -37,7 +37,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: vminsert
-          image: victoriametrics/vminsert:latest
+          image: victoriametrics/vminsert:v1.69.0-cluster
           resources:
             requests:
               cpu: "0.05"

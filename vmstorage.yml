@@ -47,7 +47,7 @@ spec:
   strategy:
     rollingUpdate: 
       maxSurge: 1
-      maxUnavailable: 0
+      maxUnavailable: 1
     type: RollingUpdate
   template:
     metadata:
@@ -57,7 +57,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: vmstorage
-          image: victoriametrics/vmstorage:latest
+          image: victoriametrics/vmstorage:v1.69.0-cluster
           resources:
             requests:
               cpu: "0.1"

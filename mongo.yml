@@ -60,6 +60,9 @@ spec:
             - containerPort: 9216
           args:
             - '--mongodb.uri=mongodb://root:example@127.0.0.1:27017/'
+            - '--discovering-mode'
+            - '--collector.dbstats'
+            - '--collector.topmetrics'
         - name: mongo-express
           image: mongo-express:latest
           imagePullPolicy: Always

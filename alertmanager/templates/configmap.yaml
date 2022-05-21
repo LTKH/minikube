@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-configuration
+  namespace: default
+data:
+  alertmanager.yml: |-
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by:
+        - alertname
+      group_interval: 1m
+      group_wait: 10s
+      receiver: alerttrap
+      repeat_interval: 1m
+      routes:
+        - match_re: 
+            alertname: ^.*$
+          receiver: alerttrap
+    receivers:
+      - name: alerttrap
+        webhook_configs:
+          - url: http://alerttrap.default.svc.cluster.local:8000/api/v1/alerts
+    inhibit_rules:
+      - source_matchers: [severity="critical"]
+        target_matchers: [severity="warning"]
+        equal: ['alertname','host','node','namespace','pod','instance']

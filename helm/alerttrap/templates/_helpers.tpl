@@ -34,7 +34,6 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "alerttrap.labels" -}}
-helm.sh/chart: {{ include "alerttrap.chart" . }}
 {{ include "alerttrap.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}

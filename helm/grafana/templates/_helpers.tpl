@@ -65,7 +65,6 @@ Allow the release namespace to be overridden for multi-namespace deployments in 
 Common labels
 */}}
 {{- define "grafana.labels" -}}
-helm.sh/chart: {{ include "grafana.chart" . }}
 {{ include "grafana.selectorLabels" . }}
 {{- if or .Chart.AppVersion .Values.image.tag }}
 app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
@@ -88,7 +87,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Common labels
 */}}
 {{- define "grafana.imageRenderer.labels" -}}
-helm.sh/chart: {{ include "grafana.chart" . }}
 {{ include "grafana.imageRenderer.selectorLabels" . }}
 {{- if or .Chart.AppVersion .Values.image.tag }}
 app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}

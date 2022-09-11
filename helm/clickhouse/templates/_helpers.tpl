@@ -34,7 +34,6 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "clickhouse.labels" -}}
-helm.sh/chart: {{ include "clickhouse.chart" . }}
 {{ include "clickhouse.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}

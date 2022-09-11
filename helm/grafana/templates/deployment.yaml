@@ -44,6 +44,8 @@ spec:
               value: "false"
             - name: GF_ALERTING_ENABLED
               value: "true"
+            #- name: GF_INSTALL_PLUGINS
+            #  value: "camptocamp-prometheus-alertmanager-datasource"
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-pv

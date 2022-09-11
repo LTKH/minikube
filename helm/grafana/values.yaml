@@ -480,11 +480,12 @@ datasources:
   datasources.yaml:
     apiVersion: 1
     datasources:
-      - name: Prometheus (vmetrics)
+      - name: VMetrics
         type: prometheus
         url: http://vmselect.default.svc.cluster.local:8481/select/0/prometheus
         access: proxy
         isDefault: true
+        editable: true
 #      - name: CloudWatch
 #        type: cloudwatch
 #        access: proxy

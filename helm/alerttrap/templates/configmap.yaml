@@ -27,10 +27,18 @@ data:
         name: "Kubernetes"
         class: "fa fa-th-large"
         nodes:
-          - id: "prod"
-            name: "Prod"
+          - id: "alerts"
+            name: "Alerts"
             href: "/api/v1/alerts"
-            tags: ["alertgroup","namespace","pod"]
+            tags: ["alertgroup","pod"]
+      - id: "vmetrics"
+        name: "VMetrics"
+        class: "fa fa-th-large"
+        nodes:
+          - id: "targets"
+            name: "Targets"
+          - id: "vmalert"
+            name: "VMalert"
           
 
     #extension_rules:

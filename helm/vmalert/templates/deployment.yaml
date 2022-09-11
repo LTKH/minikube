@@ -39,7 +39,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           args:
-            - '-rule=/vmalert-conf/alert.rules'
+            - '-rule=/vmalert-conf/*.yaml'
             - '-datasource.url=http://vmselect.default.svc.cluster.local:8481/select/0/prometheus'
             - '-remoteWrite.url=http://vminsert.default.svc.cluster.local:8480/insert/0/prometheus'
             - '-notifier.url=http://alertmanager.default.svc.cluster.local:9093'

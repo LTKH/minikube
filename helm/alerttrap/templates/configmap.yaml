@@ -37,8 +37,17 @@ data:
         nodes:
           - id: "targets"
             name: "Targets"
+            options:
+              host: "http://vmagent.default.svc.cluster.local:8429"
           - id: "vmalert"
             name: "VMalert"
+            options:
+              host: "http://vmalert.default.svc.cluster.local:8880"
+      - id: "netmap"
+        name: "Netmap"
+        class: "fa fa-sitemap"
+        options:
+          host: "http://netserver.default.svc.cluster.local:8082"
           
 
     #extension_rules:

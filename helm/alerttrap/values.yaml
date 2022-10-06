@@ -81,3 +81,58 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+configs:
+  config.yaml:
+    global:
+      cert_file:        ""
+      cert_key:         ""
+      alerts_limit:     5000
+      alerts_resolve:   180
+      alerts_delete:    600
+      
+      db:
+        client:         "sqlite3"
+        conn_string:    "/data/dbase.db"
+        history_days:   7
+
+      security:
+        admin_user:     "admin"
+        admin_password: "password" 
+
+    menu:
+      - id: "kubernetes"
+        name: "Kubernetes"
+        class: "fa fa-th-large"
+        nodes:
+          - id: "alerts"
+            name: "Alerts"
+            href: "/api/v1/alerts"
+            tags: ["alertgroup","pod"]
+      - id: "vmetrics"
+        name: "VMetrics"
+        class: "fa fa-th-large"
+        nodes:
+          - id: "targets"
+            name: "Targets"
+            options:
+              host: "http://vmagent.default.svc.cluster.local:8429"
+          - id: "alerts"
+            name: "Alerts"
+            options:
+              host: "http://vmalert.default.svc.cluster.local:8880"
+      - id: "netmap"
+        name: "Netmap"
+        class: "fa fa-sitemap"
+        options:
+          host: "http://netserver.default.svc.cluster.local:8082"
+          
+
+    #extension_rules:
+    #  - source_matchers: ['{host=~"host-2.*"}']
+    #    labels:
+    #      test: "alert2" 
+    #  - source_matchers: ['{host=~"host-5.*"}']
+    #    labels:
+    #      test: "alert5" 
+    #      test1: "тестовый раздел" 

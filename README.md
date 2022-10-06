@@ -1,11 +1,17 @@
 **Welcome, stranger!**
 
+You need to install a few applications on your computer to get started.
+
     install minikube - https://minikube.sigs.k8s.io/docs/start/
     install kubectl - https://kubernetes.io/docs/tasks/tools/
     install helm - https://helm.sh/docs/intro/install/
 
+Copy this repository to an arbitrary directory.
+
     # git clone https://github.com/LTKH/minikube.git
     # cd minikube
+
+A few more commands to execute.
 
     # helm install alertmanager ./helm/alertmanager
     # helm install alerttrap ./helm/alerttrap
@@ -15,6 +21,8 @@
     # helm install vminsert ./helm/vminsert
     # helm install vmselect ./helm/vmselect
     # helm install vmstorage ./helm/vmstorage
+
+Monitoring is ready. Use it like this.
 
     kubectl port-forward service/grafana 3000:3000
     kubectl port-forward service/alerttrap 8081:8081

@@ -22,7 +22,7 @@ data:
     receivers:
       - name: alerttrap
         webhook_configs:
-          - url: http://alerttrap.default.svc.cluster.local:8000/api/v1/alerts
+          - url: http://alerttrap.default.svc.cluster.local:8081/api/v1/alerts
     inhibit_rules:
       - source_matchers: [severity="critical"]
         target_matchers: [severity="warning"]

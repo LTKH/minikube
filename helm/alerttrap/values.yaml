@@ -88,7 +88,6 @@ configs:
       cert_file:        ""
       cert_key:         ""
       alerts_limit:     5000
-      alerts_resolve:   180
       alerts_delete:    600
       
       db:
@@ -103,29 +102,71 @@ configs:
     menu:
       - id: "kubernetes"
         name: "Kubernetes"
-        class: "fa fa-th-large"
+        class: "fa fa-cubes"
         nodes:
           - id: "alerts"
             name: "Alerts"
             href: "/api/v1/alerts"
             tags: ["alertgroup","pod"]
+            
       - id: "vmetrics"
         name: "VMetrics"
-        class: "fa fa-th-large"
+        class: "fa fa-chart-area"
         nodes:
           - id: "targets"
             name: "Targets"
             options:
-              host: "http://vmagent.default.svc.cluster.local:8429"
+              X-Custom-URL: "http://vmagent.default.svc.cluster.local:8429"
+          - id: "alerts"
+            name: "Alerts"
+            href: "/api/v1/alerts"
+            options:
+              X-Custom-URL: "http://vmalert.default.svc.cluster.local:8880"
+          #- id: "testing"
+          #  name: "Testing"
+          #  options:         
+          #    X-Custom-URL: "http://mtesting.default.svc.cluster.local:8065"
+
+      - id: "alertmanager"
+        name: "Alertmanager"
+        class: "fa fa-th-large"
+        nodes:
           - id: "alerts"
             name: "Alerts"
             options:
-              host: "http://vmalert.default.svc.cluster.local:8880"
+              X-Custom-URL: ["http://alertmanager.default.svc.cluster.local:9093"]
+          
       - id: "netmap"
         name: "Netmap"
         class: "fa fa-sitemap"
         options:
-          host: "http://netserver.default.svc.cluster.local:8082"
+          X-Custom-URL: ["http://netserver.default.svc.cluster.local:8082"]
+
+    templates:
+      - url_matcher: "^/kubernetes/alerts.*"
+        target_page: "/templates/alerts/alerts.html"
+      - url_matcher: "^/vmetrics/targets"
+        target_page: "/templates/vmetrics/targets.html"
+      - url_matcher: "^/vmetrics/alerts"
+        target_page: "/templates/alerts/alerts.html"
+      - url_matcher: "^/alertmanager/alerts"
+        target_page: "/templates/alertmanager/alerts.html"
+      - url_matcher: "^/netmap/records.*"
+        target_page: "/templates/netmap/records.html"
+      - url_matcher: "^/netmap/manage.*"
+        target_page: "/templates/netmap/manage.html"
+      - url_matcher: "^/alerts.*"
+        target_page: "/templates/alerts/alerts.html"
+      - url_matcher: "^/monitoring.*"
+        target_page: "/templates/alerts/alerts.html"
+      - url_matcher: "^/vmetrics/testing"
+        target_page: "/templates/vmetrics/testing.html"
+      - url_matcher: "^/prometheus/[^/]+/targets"
+        target_page: "/templates/vmetrics/targets.html"
+      - url_matcher: "^/prometheus/[^/]+/alerts"
+        target_page: "/templates/vmetrics/alerts.html"
+      - url_matcher: "^/.*"
+        target_page: "/templates/main.html"
           
 
     #extension_rules:

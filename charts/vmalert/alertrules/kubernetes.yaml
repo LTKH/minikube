@@ -1,0 +1,79 @@
+groups:
+- name: kube-state-metrics
+  rules:
+  - alert: vmalertTargetsMissing
+    expr: up == 0
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Service {{ $labels.job }} is down on {{ $labels.instance }}"
+      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+
+  - alert: kubernetesPodNotHealthy
+    expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[15m:1m]) > 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kubernetes Pod not healthy (instance {{ $labels.instance }})
+      description: "Pod has been in a non-ready state for longer than 15 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # This rule can be very noisy in dynamic infra with legitimate container start/stop/deployment.
+  - alert: containerKilled
+    expr: time() - container_last_seen > 60
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container killed (instance {{ $labels.instance }})
+      description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # This rule can be very noisy in dynamic infra with legitimate container start/stop/deployment.
+  - alert: containerAbsent
+    expr: absent(container_last_seen)
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container absent (instance {{ $labels.instance }})
+      description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: containerCpuUsage
+    expr: (sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) > 80
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container CPU usage (instance {{ $labels.instance }})
+      description: "Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  # See https://medium.com/faun/how-much-is-too-much-the-linux-oomkiller-and-used-memory-d32186f29c9d
+  - alert: containerMemoryUsage
+    expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container Memory usage (instance {{ $labels.instance }})
+      description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: containerVolumeUsage
+    expr: (1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container Volume usage (instance {{ $labels.instance }})
+      description: "Container Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: containerHighThrottleRate
+    expr: rate(container_cpu_cfs_throttled_seconds_total[3m]) > 1
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container high throttle rate (instance {{ $labels.instance }})
+      description: "Container is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  

@@ -13,15 +13,15 @@ Copy this repository to an arbitrary directory.
 
 A few more commands to execute.
 
-    # helm install alertmanager ./helm/alertmanager
-    # helm install alerttrap ./helm/alerttrap
-    # helm install grafana ./helm/grafana
-    # helm install vmagent ./helm/vmagent
-    # helm install vmalert ./helm/vmalert
-    # helm install vminsert ./helm/vminsert
-    # helm install vmselect ./helm/vmselect
-    # helm install vmstorage ./helm/vmstorage
-
+    # helm install alerttrap ./charts/alerttrap
+    # helm install grafana ./charts/grafana
+    # helm install alertmanager ./charts/alertmanager
+    # helm install vmcluster ./charts/vmcluster
+    # helm install vmagent ./charts/vmagent
+    # helm install vmalert ./charts/vmalert
+    # helm install loki ./charts/loki
+    # helm install promtail ./charts/promtail
+    
 Monitoring is ready. Use it like this.
 
     kubectl port-forward service/grafana 3000:3000

@@ -1,0 +1,7 @@
+apiVersion: v1
+name: vmalert
+description: Victoria Metrics Alert - executes a list of given MetricsQL expressions (rules) and sends alerts to Alert Manager.
+version: 0.5.2
+appVersion: v1.82.1
+sources:
+- https://github.com/VictoriaMetrics/helm-charts

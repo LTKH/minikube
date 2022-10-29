@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netserver-configuration
+  namespace: default
+data:
+  netserver.yaml: |-
+    global:
+      cert_file:        ""
+      cert_key:         ""
+      
+    db:
+      client:         "sqlite3"
+      conn_string:    "/tmp/dbase.db"
+
+    cache:
+      limit: 1000000
+      flush_interval: "24h"
+
+    cluster:
+      urls:           []
+
+    notifier:
+      urls:           ["http://localhost:9093"]

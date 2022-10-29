@@ -1,0 +1,91 @@
+groups:
+
+- name: complexMonRules
+  rules:
+  
+  - alert: sysmonSysCpuPct
+    expr: round(cpu_usage_active{cpu="cpu-total"}) >= 90
+    labels:
+      severity: warning
+    annotations:
+      summary: "CPU utilization percentage. Host={{ $labels.host }} Value={{ $value }}%"
+  
+  - alert: sysmonSysCpuPct
+    expr: round(avg_over_time(cpu_usage_active{cpu="cpu-total"}[15m:])) >= 90
+    labels:
+      severity: critical
+    annotations:
+      summary: "CPU average utilization value. Host={{ $labels.host }} Value={{ $value }}%"
+
+  - alert: sysmonSysMemPct
+    expr: round(avg_over_time(mem_used_percent[15m:])) > 90
+    labels:
+      severity: warning
+    annotations:
+      summary: "Memory usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
+  
+  - alert: sysmonSysMemPct
+    expr: round(avg_over_time(mem_used_percent[15m:])) > 95
+    labels:
+      severity: critical
+    annotations:
+      summary: "Memory usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
+      
+  - alert: sysmonSysSwapPct
+    expr: round(avg_over_time(swap_used_percent[15m:])) > 90
+    labels:
+      severity: warning
+    annotations:
+      summary: "Swap usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
+      
+  - alert: sysmonDiskUsedPct
+    expr: round(disk_used_percent{path="/data"}) >= 80
+    labels:
+      severity: warning
+    annotations:
+      summary: "Disk usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
+      
+  - alert: sysmonDiskUsedPct
+    expr: round(disk_used_percent{path="/data"}) >= 95
+    labels:
+      severity: critical
+    annotations:
+      summary: "Disk usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
+
+  - alert: sysmonProcState
+    expr: procstat_lookup_running == 0
+    labels:
+      severity: warning
+    annotations:
+      summary: "Application status. Name={{ $labels.application }} Appl_id={{ $labels.appl_id }} Instance={{ $labels.instance }} Stand={{ $labels.stand }}"
+      
+  - alert: sysmonProcState
+    expr: max_over_time(procstat_lookup_running[3d:5m]) > 0 and procstat_lookup_running == 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "Application status. Name={{ $labels.application }} Appl_id={{ $labels.appl_id }} Instance={{ $labels.instance }} Stand={{ $labels.stand }}"
+      
+  - alert: diagAppDirectoryExists
+    expr: filestat_exists == 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Missing application directory on server. File={{ $labels.file }}"
+      
+  - alert: diagConfdGenerateTemplate
+    expr: confd_success > 2
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Telegraf generating templates. Host={{ $labels.host }} Template={{ $labels.src }}"
+      
+  - alert: diagHttpResultCode
+    expr: http_response_result_code > 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Incorrect response result from http plugin. Result={{ $labels.result }} Server={{ $labels.server }}"

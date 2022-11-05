@@ -13,11 +13,11 @@ spec:
       {{- include "alerttrap.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       labels:
         {{- include "alerttrap.selectorLabels" . | nindent 8 }}
     spec:

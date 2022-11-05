@@ -88,7 +88,11 @@ affinity: {}
 
 podLabels: {}
 
-podAnnotations: {}
+# Annotations to be added to pod
+podAnnotations: 
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8081"
+  prometheus.io/path: "/metrics"
 
 config:
   global:
@@ -107,13 +111,22 @@ config:
       admin_password: "password" 
 
   menu:
+    - id: "monitoring"
+      name: "Monitoring"
+      class: "fa fa-chart-area"
+      nodes:
+        - id: "alerts"
+          name: "Alerts"
+          href: '/api/v1/alerts?match[]={alertgroup="telegraf"}'
+          tags: ["alertname","host"]
+
     - id: "kubernetes"
       name: "Kubernetes"
       class: "fa fa-cubes"
       nodes:
         - id: "alerts"
           name: "Alerts"
-          href: "/api/v1/alerts"
+          href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
           tags: ["alertgroup","pod"]
           
     - id: "vmetrics"

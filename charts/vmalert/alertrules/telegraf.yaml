@@ -1,6 +1,6 @@
 groups:
 
-- name: complexMonRules
+- name: telegraf
   rules:
   
   - alert: sysmonSysCpuPct
@@ -39,14 +39,14 @@ groups:
       summary: "Swap usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
       
   - alert: sysmonDiskUsedPct
-    expr: round(disk_used_percent{path="/data"}) >= 80
+    expr: round(disk_used_percent{}) >= 80
     labels:
       severity: warning
     annotations:
       summary: "Disk usage percentage. Host={{ $labels.host }} Value={{ $value }}%"
       
   - alert: sysmonDiskUsedPct
-    expr: round(disk_used_percent{path="/data"}) >= 95
+    expr: round(disk_used_percent{}) >= 95
     labels:
       severity: critical
     annotations:
@@ -66,7 +66,7 @@ groups:
     annotations:
       summary: "Application status. Name={{ $labels.application }} Appl_id={{ $labels.appl_id }} Instance={{ $labels.instance }} Stand={{ $labels.stand }}"
       
-  - alert: diagAppDirectoryExists
+  - alert: directoryExists
     expr: filestat_exists == 0
     for: 10m
     labels:
@@ -74,7 +74,7 @@ groups:
     annotations:
       summary: "Missing application directory on server. File={{ $labels.file }}"
       
-  - alert: diagConfdGenerateTemplate
+  - alert: confdGenerateTemplate
     expr: confd_success > 2
     for: 10m
     labels:
@@ -82,7 +82,7 @@ groups:
     annotations:
       summary: "Telegraf generating templates. Host={{ $labels.host }} Template={{ $labels.src }}"
       
-  - alert: diagHttpResultCode
+  - alert: httpResultCode
     expr: http_response_result_code > 0
     for: 10m
     labels:

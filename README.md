@@ -1,6 +1,6 @@
 **Welcome, stranger!**
 
-(charts/alerttrap/images/targets.jpg)
+![Alerttrap](charts/alerttrap/images/targets.jpg)
 
 You need to install a few applications on your computer to get started.
 

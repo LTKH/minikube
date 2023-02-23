@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "grafana.fullname" . }}-cm
-  namespace: default
+  #namespace: default
 data:
 
 {{- if .Values.datasources }}
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ print "grafana-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
-  namespace: default
+  #namespace: default
 data:
   {{ base $path }}: |
 {{ $.Files.Get $path | indent 4 }}

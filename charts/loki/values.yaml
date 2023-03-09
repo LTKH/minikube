@@ -154,7 +154,7 @@ podLabels: {}
 podAnnotations:
   prometheus.io/scrape: "true"
   prometheus.io/port: "3100"
-  prometheus.io/path: "/metrics1"
+  prometheus.io/path: "/metrics"
 
 podManagementPolicy: OrderedReady
 

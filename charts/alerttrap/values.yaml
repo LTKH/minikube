@@ -173,8 +173,8 @@ config:
           name: "Records"
           options:
             X-Custom-URL: ["http://netserver:8084"]
-        - id: "manage"
-          name: "Manage"
+        - id: "exceptions"
+          name: "Exceptions"
           options:
             X-Custom-URL: ["http://netserver:8084"]
 
@@ -189,8 +189,8 @@ config:
       target_page: "/templates/alertmanager/alerts.html"
     - url_matcher: "^/netmap/records.*"
       target_page: "/templates/netmap/records.html"
-    - url_matcher: "^/netmap/manage.*"
-      target_page: "/templates/netmap/manage.html"
+    - url_matcher: "^/netmap/exceptions.*"
+      target_page: "/templates/netmap/exceptions.html"
     - url_matcher: "^/alerts.*"
       target_page: "/templates/alerts/alerts.html"
     - url_matcher: "^/monitoring.*"

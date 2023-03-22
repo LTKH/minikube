@@ -158,7 +158,9 @@ vmselect:
     #   memory: 64Mi
 
   # -- Pod's security context. Ref: [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  securityContext: {}
+  securityContext: 
+    runAsNonRoot: true
+    runAsUser: 1000
   podSecurityContext: {}
   # -- Cache root folder
   cacheMountPath: /cache
@@ -368,7 +370,9 @@ vminsert:
     #   cpu: 50m
     #   memory: 64Mi
   # -- Pod's security context. Ref: [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
-  securityContext: {}
+  securityContext: 
+    runAsNonRoot: true
+    runAsUser: 1000
   podSecurityContext: {}
   service:
     # -- Service annotations
@@ -582,7 +586,9 @@ vmstorage:
     #   memory: 512Mi
 
   # -- Pod's security context. Ref: [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
-  securityContext: {}
+  securityContext: 
+    runAsNonRoot: true
+    runAsUser: 1000
   podSecurityContext: {}
   service:
     # -- Service annotations

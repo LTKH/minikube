@@ -16,7 +16,7 @@ serviceAccount:
 imagePullSecrets: []
 
 rbac:
-  create: true
+  create: false
   # Note: The PSP will only be deployed, if Kubernetes (<1.25) supports the resource.
   pspEnabled: true
   namespaced: false
@@ -28,7 +28,7 @@ server:
   enabled: true
   image:
     repository: victoriametrics/vmalert
-    tag: "" # rewrites Chart.AppVersion
+    tag: "v1.69.0" # rewrites Chart.AppVersion
     pullPolicy: IfNotPresent
   nameOverride: ""
   fullnameOverride: "vmalert"
@@ -184,13 +184,12 @@ server:
   # fsGroup: 2000
 
   securityContext:
-    {}
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-  # runAsUser: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
 
   resources:
     {}
@@ -249,3 +248,5 @@ serviceMonitor:
 
 alertmanager:
   enabled: false
+  ingress:
+    enabled: false

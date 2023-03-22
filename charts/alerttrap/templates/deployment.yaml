@@ -13,11 +13,10 @@ spec:
       {{- include "alerttrap.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- range $key, $value := .Values.podAnnotations }}
-        {{ $key }}: {{ $value | quote }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "alerttrap.selectorLabels" . | nindent 8 }}
     spec:
@@ -30,7 +29,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
+          securityContext: 
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -44,9 +43,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /alerttrap-conf
-              name: config
+            - name: config
+              mountPath: /alerttrap-conf
       volumes:
         - name: config
           configMap:
-            name: {{ include "alerttrap.fullname" . }}-config
+            name: {{ include "alerttrap.fullname" . }}-cm

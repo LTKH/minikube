@@ -88,12 +88,6 @@ affinity: {}
 
 podLabels: {}
 
-# Annotations to be added to pod
-podAnnotations: 
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "8081"
-  prometheus.io/path: "/metrics"
-
 config:
   global:
     cert_file:        ""
@@ -110,6 +104,22 @@ config:
       admin_user:     "admin"
       admin_password: "password" 
 
+    auth:
+      ldap:
+        enabled:        false
+        search_base:    "dc=example,dc=com"
+        host:           "localhost"
+        port:           389
+        use_ssl:        false
+        bind_dn:        "%s"
+        bind_user:      ""
+        bind_pass:      ""
+        user_filter:    "(uid=%s)"
+        attributes:     
+          name:         "givenName"
+          username:     "sAMAccountName"
+          email:        "mail" 
+
   menu:
     - id: "monitoring"
       name: "Monitoring"
@@ -118,16 +128,16 @@ config:
         - id: "alerts"
           name: "Alerts"
           href: '/api/v1/alerts?match[]={alertgroup="telegraf"}'
-          tags: ["alertname","host"]
+          tags: ["host"]
 
     - id: "kubernetes"
       name: "Kubernetes"
       class: "fa fa-cubes"
       nodes:
-        - id: "alerts"
-          name: "Alerts"
+        - id: "cluster-1"
+          name: "Cluster-1"
           href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
-          tags: ["alertgroup","pod"]
+          tags: ["node","namespace","pod"]
           
     - id: "vmetrics"
       name: "VMetrics"
@@ -167,13 +177,9 @@ config:
           name: "Manage"
           options:
             X-Custom-URL: ["http://netserver:8084"]
-        - id: "manage"
-          name: "Manage"
-          options:
-            X-Custom-URL: ["http://netserver:8084"]
 
   templates:
-    - url_matcher: "^/kubernetes/alerts.*"
+    - url_matcher: "^/kubernetes/cluster.*"
       target_page: "/templates/alerts/alerts.html"
     - url_matcher: "^/vmetrics/targets"
       target_page: "/templates/vmetrics/targets.html"

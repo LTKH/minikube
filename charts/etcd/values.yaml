@@ -308,12 +308,9 @@ containerSecurityContext:
 ## @param resources.requests [object] The requested resources for the etcd container
 ##
 resources:
-  ## Example:
-  ## limits:
-  ##    cpu: 500m
-  ##    memory: 1Gi
-  ##
-  limits: {}
+  limits: 
+    cpu: 256m
+    memory: 512Mi
   requests: {}
 ## Configure extra options for liveness probe
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
@@ -628,12 +625,9 @@ volumePermissions:
   ## @param volumePermissions.resources.requests [object] Init container volume-permissions resource  requests
   ##
   resources:
-    ## Example:
-    ## limits:
-    ##    cpu: 500m
-    ##    memory: 1Gi
-    ##
-    limits: {}
+    limits: 
+      cpu: 256m
+      memory: 512Mi
     requests: {}
 
 ## @section Network Policy parameters

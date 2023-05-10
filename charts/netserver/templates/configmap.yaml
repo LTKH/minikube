@@ -14,7 +14,6 @@ data:
       client:         "sqlite3"
       conn_string:    "/tmp/netmap.db"
       limit:          1000000
-      flush_interval: "24h"
 
     notifier:
       urls:           ["http://localhost:9093"]

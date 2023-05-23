@@ -37,15 +37,23 @@ spec:
               name: http
           env:
             - name: GF_SECURITY_ADMIN_USER
-              value: {{ .Values.adminUser }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "grafana.fullname" . }}-secret
+                  key: username
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: {{ .Values.adminPassword }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "grafana.fullname" . }}-secret
+                  key: password
             - name: GF_UNIFIED_ALERTING_ENABLED
               value: "false"
             - name: GF_ALERTING_ENABLED
               value: "true"
             #- name: GF_INSTALL_PLUGINS
             #  value: "camptocamp-prometheus-alertmanager-datasource"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-pv

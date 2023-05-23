@@ -47,4 +47,4 @@ spec:
       volumes:
         - name: netserver-volume
           configMap:
-            name: netserver-configuration
+            name: netserver-cm

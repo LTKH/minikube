@@ -1,14 +1,15 @@
-image:
-  repository: grafana/loki
-  tag: 2.4.2
-  pullPolicy: IfNotPresent
+loki:
+  image:
+    repository: grafana/loki
+    tag: 2.4.2
+    pullPolicy: IfNotPresent
 
-  ## Optionally specify an array of imagePullSecrets.
-  ## Secrets must be manually created in the namespace.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
-  # pullSecrets:
-  #   - myRegistryKeySecretName
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ##
+    # pullSecrets:
+    #   - myRegistryKeySecretName
 
 ingress:
   enabled: false

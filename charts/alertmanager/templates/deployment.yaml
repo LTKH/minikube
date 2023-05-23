@@ -32,12 +32,12 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.alertmanager.image.repository }}:{{ .Values.alertmanager.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.alertmanager.image.pullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           args:
-            - --storage.path=/alertmanager
+            - --storage.path={{ .Values.storage.path }}
             - --config.file=/etc/alertmanager/alertmanager.yml
             {{- if or (gt (int .Values.replicaCount) 1) (.Values.additionalPeers) }}
             - --cluster.advertise-address=[$(POD_IP)]:{{ $svcClusterPort }}
@@ -59,18 +59,20 @@ spec:
             {{- end }}
           ports:
             - name: http
-              containerPort: 9093
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /etc/alertmanager
+            - name: storage
+              mountPath: {{ .Values.storage.path }}
       volumes:
         - name: config
           configMap:
-            name: {{ include "alertmanager.fullname" . }}
+            name: {{ include "alertmanager.fullname" . }}-cm
+        - name: storage
+          emptyDir: {}

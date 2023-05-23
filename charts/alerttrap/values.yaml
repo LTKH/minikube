@@ -4,6 +4,10 @@
 
 replicaCount: 1
 
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
 image:
   repository: ghcr.io/ltkh/alerttrap
   pullPolicy: Always
@@ -32,13 +36,13 @@ podAnnotations:
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   type: ClusterIP
@@ -61,17 +65,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -97,7 +101,7 @@ config:
     
     db:
       client:         "sqlite3"
-      conn_string:    "/data/dbase.db"
+      conn_string:    "/storage/dbase.db"
       history_days:   7
 
     security:
@@ -178,13 +182,26 @@ config:
           options:
             X-Custom-URL: ["http://netserver:8084"]
 
+    - id: "etcdkeeper"
+      name: "Etcdkeeper"
+      class: "fas fa-cog fa-fw"
+      nodes:
+        - id: "prod"
+          name: "Prod"
+          options:
+            X-Custom-URL: ["http://localhost:2379"]
+
   templates:
-    - url_matcher: "^/kubernetes/cluster.*"
+    - url_matcher: "^/404.html"
+      target_page: "/404.html"
+    - url_matcher: "^/kubernetes/alerts.*"
       target_page: "/templates/alerts/alerts.html"
     - url_matcher: "^/vmetrics/targets"
       target_page: "/templates/vmetrics/targets.html"
     - url_matcher: "^/vmetrics/alerts"
       target_page: "/templates/vmetrics/alerts.html"
+    - url_matcher: "^/vmetrics/testing"
+      target_page: "/templates/vmetrics/testing.html"
     - url_matcher: "^/alertmanager/alerts"
       target_page: "/templates/alertmanager/alerts.html"
     - url_matcher: "^/netmap/records.*"
@@ -195,12 +212,10 @@ config:
       target_page: "/templates/alerts/alerts.html"
     - url_matcher: "^/monitoring.*"
       target_page: "/templates/alerts/alerts.html"
-    - url_matcher: "^/vmetrics/testing"
-      target_page: "/templates/vmetrics/testing.html"
-    - url_matcher: "^/prometheus/[^/]+/targets"
-      target_page: "/templates/vmetrics/targets.html"
-    - url_matcher: "^/prometheus/[^/]+/alerts"
-      target_page: "/templates/vmetrics/alerts.html"
+    - url_matcher: "^/etcdkeeper/.*/apps/[^/]+$"
+      target_page: "/templates/etcd/editor.html"
+    - url_matcher: "^/etcdkeeper"
+      target_page: "/templates/etcd/apps.html"
     - url_matcher: "^/.*"
       target_page: "/templates/main.html"
         

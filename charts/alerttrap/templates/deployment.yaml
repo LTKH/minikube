@@ -45,7 +45,11 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /alerttrap-conf
+            - name: storage
+              mountPath: /storage
       volumes:
         - name: config
           configMap:
             name: {{ include "alerttrap.fullname" . }}-cm
+        - name: storage
+          emptyDir: {}

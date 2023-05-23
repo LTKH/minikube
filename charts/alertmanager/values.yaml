@@ -4,6 +4,10 @@
 
 replicaCount: 1
 
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
 service:
   enabled: true
   annotations: {}
@@ -15,11 +19,12 @@ service:
   # if you want to force a specific nodePort. Must be use with service.type=NodePort
   # nodePort:
 
-image:
-  repository: prom/alertmanager
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.24.0"
+alertmanager:
+  image:
+    repository: prom/alertmanager
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.24.0"
 
 imagePullSecrets: []
 nameOverride: "alertmanager"
@@ -43,26 +48,13 @@ podAnnotations:
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-persistence:
-  enabled: true
-  ## Persistent Volume Storage Class
-  ## If defined, storageClassName: <storageClass>
-  ## If set to "-", storageClassName: "", which disables dynamic provisioning
-  ## If undefined (the default) or set to null, no storageClassName spec is
-  ## set, choosing the default provisioner.
-  ##
-  # storageClass: "-"
-  accessModes:
-    - ReadWriteOnce
-  size: 50Mi
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 ingress:
   enabled: false
@@ -80,18 +72,21 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+storage:
+  path: /alertmanager
+
 resources: 
   limits:
-    cpu: 100m
+    cpu: 50m
     memory: 128Mi
   requests:
-    cpu: 100m
+    cpu: 50m
     memory: 128Mi
 
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 

@@ -66,7 +66,7 @@ server:
   # vmalert reads metrics from source, next section represents its configuration. It can be any service which supports
   # MetricsQL or PromQL.
   datasource:
-    url: "http://vmcluster-vmselect:8481/select/0/prometheus"
+    url: "http://vmselect:8481/select/0/prometheus"
     # -- Basic auth for datasource
     basicAuth:
       username: ""
@@ -80,7 +80,7 @@ server:
 
   remote:
     write:
-      url: "http://vmcluster-vminsert:8480/insert/0/prometheus"
+      url: "http://vminsert:8480/insert/0/prometheus"
       # -- Basic auth for remote write
       basicAuth:
         username: ""

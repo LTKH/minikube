@@ -2,8 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: netserver-configuration
-  namespace: default
+  name: netserver-cm
 data:
   netserver.yaml: |-
     global:
@@ -11,9 +10,11 @@ data:
       cert_key:       ""
 
     db:
-      client:         "sqlite3"
-      conn_string:    "/tmp/netmap.db"
+      client:         "couchdb"
+      conn_string:    "http://couchdb:5984"
       limit:          1000000
+      username:       "admin"
+      password:       "password"
 
     notifier:
-      urls:           ["http://localhost:9093"]
+      urls:           ["http://alertmanager:9093"]

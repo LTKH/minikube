@@ -30,10 +30,13 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- $image := coalesce .Values.couchdb.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml (.Values.couchdb.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.couchdb.resources | default .Values.resources) | nindent 12 }}
           ports:
             - name: couchdb
               containerPort: {{ .Values.service.port }}
@@ -51,8 +54,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "couchdb.fullname" . }}-secret
                   key: password
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: local
               mountPath: /opt/couchdb/etc/local.d

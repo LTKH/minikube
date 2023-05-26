@@ -1,4 +1,3 @@
-{{- $svcClusterPort := .Values.service.clusterPort -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,10 +13,11 @@ spec:
       {{- include "alertmanager.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       labels:
         {{- include "alertmanager.selectorLabels" . | nindent 8 }}
     spec:
@@ -30,30 +30,16 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- $image := coalesce .Values.alertmanager.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.alertmanager.image.repository }}:{{ .Values.alertmanager.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.alertmanager.image.pullPolicy }}
+            {{- toYaml (.Values.alertmanager.securityContext | default .Values.securityContext) | nindent 12 }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml (.Values.alertmanager.resources | default .Values.resources) | nindent 12 }}
           args:
             - --storage.path={{ .Values.storage.path }}
             - --config.file=/etc/alertmanager/alertmanager.yml
-            {{- if or (gt (int .Values.replicaCount) 1) (.Values.additionalPeers) }}
-            - --cluster.advertise-address=[$(POD_IP)]:{{ $svcClusterPort }}
-            - --cluster.listen-address=0.0.0.0:{{ $svcClusterPort }}
-            {{- end }}
-            {{- if gt (int .Values.replicaCount) 1}}
-            {{- $fullName := include "alertmanager.fullname" . }}
-            {{- range $i := until (int .Values.replicaCount) }}
-            - --cluster.peer={{ $fullName }}-{{ $i }}.{{ $fullName }}-headless:{{ $svcClusterPort }}
-            {{- end }}
-            {{- end }}
-            {{- if .Values.additionalPeers }}
-            {{- range $item := .Values.additionalPeers }}
-            - --cluster.peer={{ $item }}
-            {{- end }}
-            {{- end }}
             {{- range $key, $value := .Values.extraArgs }}
             - --{{ $key }}={{ $value }}
             {{- end }}

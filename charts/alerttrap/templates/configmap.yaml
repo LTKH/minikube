@@ -1,4 +1,4 @@
-{{- if gt (len .Values.config) 0 }}
+{{- if gt (len .Values.alerttrap.config) 0 }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -8,5 +8,5 @@ metadata:
     {{- include "alerttrap.labels" . | nindent 4 }}
 data:
   alerttrap.yaml: |-
-    {{- toYaml .Values.config | nindent 4 }}
+    {{- toYaml .Values.alerttrap.config | nindent 4 }}
 {{- end }}

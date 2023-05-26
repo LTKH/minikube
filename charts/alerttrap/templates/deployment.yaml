@@ -13,10 +13,11 @@ spec:
       {{- include "alerttrap.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       labels:
         {{- include "alerttrap.selectorLabels" . | nindent 8 }}
     spec:
@@ -29,10 +30,13 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext: 
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- $image := coalesce .Values.alerttrap.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
+          securityContext:
+            {{- toYaml (.Values.alerttrap.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.alerttrap.resources | default .Values.resources) | nindent 12 }}
           ports:
             - containerPort: {{ .Values.service.port }}
               name: web
@@ -41,7 +45,11 @@ spec:
             - '-web.dir=/data/web'
             - '-config.file=/alerttrap-conf/alerttrap.yaml'
           resources:
+            {{- if and .Values.alerttrap .Values.alerttrap.resources }}
+            {{- toYaml .Values.alerttrap.resources | nindent 12 }}
+            {{- else }}
             {{- toYaml .Values.resources | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /alerttrap-conf

@@ -29,10 +29,13 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- $image := coalesce .Values.vmselect.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml (.Values.vmselect.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.vmselect.resources | default .Values.resources) | nindent 12 }}
           args:
             - {{ printf "%s=%s" "--cacheDataPath" .Values.cache.mountPath | quote}}
             {{- range $key, $value := .Values.extraArgs }}
@@ -43,8 +46,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: cache
               mountPath: {{ .Values.cache.mountPath }}

@@ -51,8 +51,13 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.loki.image.repository }}:{{ .Values.loki.image.tag }}"
-          imagePullPolicy: {{ .Values.loki.image.pullPolicy }}
+          {{- $image := coalesce .Values.loki.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
+          securityContext:
+            {{- toYaml (.Values.loki.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.loki.resources | default .Values.resources) | nindent 12 }}
           args:
             - "-config.file=/etc/loki/loki.yaml"
           {{- range $key, $value := .Values.extraArgs }}
@@ -81,10 +86,6 @@ spec:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          securityContext:
-            readOnlyRootFilesystem: true
           env:
             {{- if .Values.env }}
               {{- toYaml .Values.env | nindent 12 }}

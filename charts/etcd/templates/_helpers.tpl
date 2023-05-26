@@ -60,3 +60,25 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Return the proper etcd peer protocol
+*/}}
+{{- define "etcd.peerProtocol" -}}
+{{- if .Values.auth.peer.secureTransport -}}
+{{- print "https" -}}
+{{- else -}}
+{{- print "http" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper etcd client protocol
+*/}}
+{{- define "etcd.clientProtocol" -}}
+{{- if .Values.auth.client.secureTransport -}}
+{{- print "https" -}}
+{{- else -}}
+{{- print "http" -}}
+{{- end -}}
+{{- end -}}

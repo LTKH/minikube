@@ -1,13 +1,11 @@
-apiVersion: apps/v1
+apiVersion: apps/v1 
 kind: StatefulSet
 metadata:
   name: {{ include "etcd.fullname" . }}
   labels:
     {{- include "etcd.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "etcd.selectorLabels" . | nindent 6 }}
@@ -29,29 +27,53 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- $etcdFullname := include "etcd.fullname" . }}
+        {{- $etcdHeadlessServiceName := (printf "%s-%s" $etcdFullname "headless" | trunc 63 | trimSuffix "-") }}
+        {{- $clusterDomain := .Values.clusterDomain }}
+        {{- $etcdPeerProtocol := include "etcd.peerProtocol" . }}
+        {{- $etcdPeerPort := int .Values.containerPorts.peer }}
+        {{- $etcdClientProtocol := include "etcd.clientProtocol" . }}
+        {{- $etcdClientPort := int .Values.containerPorts.client }}
+        {{- $releaseNamespace := .Release.Namespace }}
         - name: {{ include "etcd.fullname" . }}
+          {{- $image := coalesce .Values.etcd.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml (.Values.etcd.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.etcd.resources | default .Values.resources) | nindent 12 }}
           env:
-            - name: "ETCD_ADVERTISE_CLIENT_URLS"
-              value: "http://127.0.0.1:{{ .Values.service.port }}"
-            - name: "ETCD_LISTEN_CLIENT_URLS"
-              value: "http://0.0.0.0:{{ .Values.service.port }}"
-            - name: "ALLOW_NONE_AUTHENTICATION"
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ETCD_NAME
+              value: "$(MY_POD_NAME)"
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: {{ printf "%s://$(MY_POD_NAME).%s.%s.svc.%s:%d" $etcdClientProtocol $etcdHeadlessServiceName $releaseNamespace $clusterDomain $etcdClientPort | quote }}
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: {{ printf "%s://0.0.0.0:%d" $etcdClientProtocol $etcdClientPort | quote }}
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: {{ printf "%s://$(MY_POD_NAME).%s.%s.svc.%s:%d" $etcdPeerProtocol $etcdHeadlessServiceName $releaseNamespace $clusterDomain $etcdPeerPort | quote }}
+            - name: ETCD_LISTEN_PEER_URLS
+              value: {{ printf "%s://0.0.0.0:%d" $etcdPeerProtocol $etcdPeerPort | quote }}
+            - name: ALLOW_NONE_AUTHENTICATION
               value: "yes"
             - name: ETCD_ENABLE_V2
               value: "true"
-            #{{- $replicaCount := int .Values.replicaCount }}
-            #{{- range $e, $i := until $replicaCount }}
-            #{{- end }}
+            - name: ETCD_INITIAL_CLUSTER
+              value: "{{ range $e, $i := until (int .Values.replicaCount) }}{{ if $i }},{{ end }}{{ printf "etcd-%d=%s://etcd-%d.%s.%s.svc.%s:%d" $i $etcdPeerProtocol $i $etcdHeadlessServiceName $releaseNamespace $clusterDomain $etcdPeerPort }}{{ end }}"
+            - name: ETCD_INITIAL_CLUSTER_TOKEN
+              value: "etcd-cluster-k8s"
+            - name: ETCD_INITIAL_CLUSTER_STATE
+              value: {{ default (ternary "new" "existing" .Release.IsInstall) .Values.initialClusterState | quote }}
+            - name: ETCD_ON_K8S
+              value: "yes"
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.ports.client }}
               protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: {{ .Values.storage.path }}

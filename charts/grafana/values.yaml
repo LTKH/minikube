@@ -1,3 +1,5 @@
+grafana: {}
+
 rbac:
   create: false
   ## Use an existing ClusterRole/Role (depending on rbac.namespaced false/true)

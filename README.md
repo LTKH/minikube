@@ -18,7 +18,9 @@ A few more commands to execute.
     # helm install alerttrap ./charts/alerttrap
     # helm install grafana ./charts/grafana
     # helm install alertmanager ./charts/alertmanager
-    # helm install vmcluster ./charts/vmcluster
+    # helm install vmstorage ./charts/vmstorage
+    # helm install vminsert ./charts/vminsert
+    # helm install vmselect ./charts/vmselect
     # helm install vmagent ./charts/vmagent
     # helm install vmalert ./charts/vmalert
     # helm install loki ./charts/loki

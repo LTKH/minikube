@@ -29,18 +29,19 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- $image := coalesce .Values.netserver.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml (.Values.netserver.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.netserver.resources | default .Values.resources) | nindent 12 }}
           ports:
             - containerPort: {{ .Values.service.port }}
               name: web
           args:
             - '-web.listen-address=:{{ .Values.service.port }}'
             - '-config.file=/netserver-conf/netserver.yaml'
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /netserver-conf
               name: netserver-volume

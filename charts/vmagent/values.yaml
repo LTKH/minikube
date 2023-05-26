@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+vmagent: {}
+
 replicaCount: 1
 
 # ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/

@@ -30,8 +30,13 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- $image := coalesce .Values.grafana.image .Values.image }}
+          image: "{{ $image.repository }}:{{ $image.tag }}"
+          imagePullPolicy: {{ $image.pullPolicy }}
+          securityContext:
+            {{- toYaml (.Values.grafana.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.grafana.resources | default .Values.resources) | nindent 12 }}
           ports:
             - containerPort: 3000
               name: http
@@ -52,8 +57,6 @@ spec:
               value: "true"
             #- name: GF_INSTALL_PLUGINS
             #  value: "camptocamp-prometheus-alertmanager-datasource"
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-pv

@@ -1,13 +1,95 @@
 # Default values for etcd.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 1
+
+etcd: {}
+
+replicaCount: 2
 
 image:
   repository: bitnami/etcd
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "3.5.9-debian-11-r3"
+
+clusterDomain: cluster.local
+
+## Authentication parameters
+##
+auth:
+  peer:
+    ## @param auth.peer.secureTransport Switch to encrypt server-to-server communications using TLS certificates
+    ##
+    secureTransport: false
+    ## @param auth.peer.useAutoTLS Switch to automatically create the TLS certificates
+    ##
+    useAutoTLS: false
+    ## @param auth.peer.existingSecret Name of the existing secret containing the TLS certificates for server-to-server communications
+    ##
+    existingSecret: ""
+    ## @param auth.peer.enableAuthentication Switch to enable host authentication using TLS certificates. Requires existing secret
+    ##
+    enableAuthentication: false
+    ## @param auth.peer.certFilename Name of the file containing the peer certificate
+    ##
+    certFilename: cert.pem
+    ## @param auth.peer.certKeyFilename Name of the file containing the peer certificate private key
+    ##
+    certKeyFilename: key.pem
+    ## @param auth.peer.caFilename Name of the file containing the peer CA certificate
+    ## If not specified and `auth.peer.enableAuthentication=true` or `rbac.enabled=true`, the default is is `ca.crt`
+    ##
+    caFilename: ""
+  client:
+    ## @param auth.client.secureTransport Switch to encrypt client-to-server communications using TLS certificates
+    ##
+    secureTransport: false
+    ## @param auth.client.useAutoTLS Switch to automatically create the TLS certificates
+    ##
+    useAutoTLS: false
+    ## @param auth.client.existingSecret Name of the existing secret containing the TLS certificates for client-to-server communications
+    ##
+    existingSecret: ""
+    ## @param auth.client.enableAuthentication Switch to enable host authentication using TLS certificates. Requires existing secret
+    ##
+    enableAuthentication: false
+    ## @param auth.client.certFilename Name of the file containing the client certificate
+    ##
+    certFilename: cert.pem
+    ## @param auth.client.certKeyFilename Name of the file containing the client certificate private key
+    ##
+    certKeyFilename: key.pem
+    ## @param auth.client.caFilename Name of the file containing the client CA certificate
+    ## If not specified and `auth.client.enableAuthentication=true` or `auth.rbac.enabled=true`, the default is is `ca.crt`
+    ##
+    caFilename: ""
+
+service:
+  ## @param service.type Kubernetes Service type
+  ##
+  type: ClusterIP
+  ## @param service.enabled create second service if equal true
+  ##
+  enabled: true
+  ## @param service.clusterIP Kubernetes service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP: ""
+  ## @param service.ports.client etcd client port
+  ## @param service.ports.peer etcd peer port
+  ##
+  ports:
+    client: 2379
+    peer: 2380
+
+## etcd container ports to open
+## @param containerPorts.client Client port to expose at container level
+## @param containerPorts.peer Peer port to expose at container level
+##
+containerPorts:
+  client: 2379
+  peer: 2380
 
 imagePullSecrets: []
 nameOverride: ""
@@ -22,7 +104,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+# Annotations to be added to pod
+podAnnotations: 
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "2379"
+  prometheus.io/path: "/metrics"
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -34,11 +120,6 @@ securityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1001
-
-service:
-  type: ClusterIP
-  port: 2379
-  targetPort: 2379
 
 ingress:
   enabled: false
@@ -71,13 +152,6 @@ resources:
 storage:
   path: /bitnami/etcd/data
   size: 1Gi
-
-autoscaling:
-  enabled: false
-#  minReplicas: 1
-#  maxReplicas: 2
-#  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

@@ -13,10 +13,11 @@ spec:
       {{- include "cdserver.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       labels:
         {{- include "cdserver.selectorLabels" . | nindent 8 }}
     spec:
@@ -40,6 +41,12 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          args:
+            - '-web.listen-address=:{{ .Values.service.port }}'
+            - '-config.file=/cdserver-conf/cdserver.yml'
+          volumeMounts:
+            - name: config
+              mountPath: /cdserver-conf
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -52,3 +59,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "cdserver.fullname" . }}-cm

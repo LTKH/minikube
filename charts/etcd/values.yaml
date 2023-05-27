@@ -10,7 +10,7 @@ image:
   repository: bitnami/etcd
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3.5.9-debian-11-r3"
+  tag: "3.5.9"
 
 clusterDomain: cluster.local
 

@@ -17,8 +17,8 @@ image:
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "cdserver"
+fullnameOverride: "cdserver"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -29,7 +29,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+# Annotations to be added to pod
+podAnnotations: 
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8083"
+  prometheus.io/path: "/metrics"
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -82,3 +86,15 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+config:
+  global:
+    cert_file:        ""
+    cert_key:         ""
+
+  backends:
+    - backend:        "etcd"
+      id:             "etcd"
+      nodes:          ["http://etcd-headless:2379"]
+      username:       ""
+      password:       ""

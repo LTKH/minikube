@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+alertmanager: {}
+
 replicaCount: 1
 
 podDisruptionBudget:
@@ -95,25 +97,24 @@ tolerations: []
 
 affinity: {}
 
-alertmanager: 
-  config:
-    global:
-      resolve_timeout: 5m
-    route:
-      receiver: alerttrap
-      group_by: ['alertname']
-      group_interval: 1m
-      group_wait: 10s
-      repeat_interval: 1m
-      #routes:
-      #  - match_re: 
-      #      alertname: ^.*$
-      #    receiver: alerttrap
-    receivers:
-      - name: alerttrap
-        webhook_configs:
-          - url: http://alerttrap:8081/api/v1/alerts
-    inhibit_rules:
-      - source_matchers: [severity="critical"]
-        target_matchers: [severity="warning"]
-        equal: ['alertname','host','node','namespace','pod','instance']
+config:
+  global:
+    resolve_timeout: 5m
+  route:
+    receiver: alerttrap
+    group_by: ['alertname']
+    group_interval: 1m
+    group_wait: 10s
+    repeat_interval: 1m
+    #routes:
+    #  - match_re: 
+    #      alertname: ^.*$
+    #    receiver: alerttrap
+  receivers:
+    - name: alerttrap
+      webhook_configs:
+        - url: http://alerttrap:8081/api/v1/alerts
+  inhibit_rules:
+    - source_matchers: [severity="critical"]
+      target_matchers: [severity="warning"]
+      equal: ['alertname','host','node','namespace','pod','instance']

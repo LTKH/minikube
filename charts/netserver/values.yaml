@@ -86,3 +86,18 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+config:
+  global:
+    cert_file:      ""
+    cert_key:       ""
+
+  db:
+    client:         "couchdb"
+    conn_string:    "http://couchdb:5984"
+    limit:          1000000
+    username:       "admin"
+    password:       "password"
+
+  notifier:
+    urls:           ["http://alertmanager:9093"]

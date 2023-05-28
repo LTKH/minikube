@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+alerttrap: {}
+
 replicaCount: 1
 
 podDisruptionBudget:
@@ -88,140 +90,139 @@ affinity: {}
 
 podLabels: {}
 
-alerttrap: 
-  config:
-    global:
-      cert_file:         ""
-      cert_key:          ""
-      alerts_limit:      5000
-      alerts_delete:     600
-      
-      db:
-        client:          "sqlite3"
-        conn_string:     "/storage/dbase.db"
-        history_days:    7
+config:
+  global:
+    cert_file:         ""
+    cert_key:          ""
+    alerts_limit:      5000
+    alerts_delete:     600
+    
+    db:
+      client:          "sqlite3"
+      conn_string:     "/storage/dbase.db"
+      history_days:    7
 
-      security:
-        admin_user:      "admin"
-        admin_password:  "password" 
+    security:
+      admin_user:      "admin"
+      admin_password:  "password" 
 
-      auth:
-        ldap:
-          enabled:        false
-          search_base:    "dc=example,dc=com"
-          host:           "localhost"
-          port:           389
-          use_ssl:        false
-          bind_dn:        "%s"
-          bind_user:      ""
-          bind_pass:      ""
-          user_filter:    "(uid=%s)"
-          attributes:     
-            name:         "givenName"
-            username:     "sAMAccountName"
-            email:        "mail" 
+    auth:
+      ldap:
+        enabled:        false
+        search_base:    "dc=example,dc=com"
+        host:           "localhost"
+        port:           389
+        use_ssl:        false
+        bind_dn:        "%s"
+        bind_user:      ""
+        bind_pass:      ""
+        user_filter:    "(uid=%s)"
+        attributes:     
+          name:         "givenName"
+          username:     "sAMAccountName"
+          email:        "mail" 
 
-    menu:
-      - id: "monitoring"
-        name: "Monitoring"
-        class: "fa fa-chart-area"
-        nodes:
-          - id: "alerts"
-            name: "Alerts"
-            href: '/api/v1/alerts?match[]={alertgroup="telegraf"}'
-            tags: ["host"]
+  menu:
+    - id: "monitoring"
+      name: "Monitoring"
+      class: "fa fa-chart-area"
+      nodes:
+        - id: "alerts"
+          name: "Alerts"
+          href: '/api/v1/alerts?match[]={alertgroup="telegraf"}'
+          tags: ["host"]
 
-      - id: "kubernetes"
-        name: "Kubernetes"
-        class: "fa fa-cubes"
-        nodes:
-          - id: "cluster-1"
-            name: "Cluster-1"
-            href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
-            tags: ["node","namespace","pod"]
-            
-      - id: "vmetrics"
-        name: "VMetrics"
-        class: "fa fa-chart-area"
-        nodes:
-          - id: "targets"
-            name: "Targets"
-            options:
-              X-Custom-URL: ["http://vmagent:8429"]
-          - id: "alerts"
-            name: "Alerts"
-            options:
-              X-Custom-URL: ["http://vmalert:8880"]
-          #- id: "testing"
-          #  name: "Testing"
-          #  options:         
-          #    X-Custom-URL: "http://mtesting:8065"
-
-      - id: "alertmanager"
-        name: "Alertmanager"
-        class: "fa fa-th-large"
-        nodes:
-          - id: "alerts"
-            name: "Alerts"
-            options:
-              X-Custom-URL: ["http://alertmanager:9093"]
+    - id: "kubernetes"
+      name: "Kubernetes"
+      class: "fa fa-cubes"
+      nodes:
+        - id: "cluster-1"
+          name: "Cluster-1"
+          href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
+          tags: ["node","namespace","pod"]
           
-      - id: "netmap"
-        name: "Netmap"
-        class: "fa fa-sitemap"
-        nodes:
-          - id: "records"
-            name: "Records"
-            options:
-              X-Custom-URL: ["http://netserver:8084"]
-          - id: "exceptions"
-            name: "Exceptions"
-            options:
-              X-Custom-URL: ["http://netserver:8084"]
+    - id: "vmetrics"
+      name: "VMetrics"
+      class: "fa fa-chart-area"
+      nodes:
+        - id: "targets"
+          name: "Targets"
+          options:
+            X-Custom-URL: ["http://vmagent:8429"]
+        - id: "alerts"
+          name: "Alerts"
+          options:
+            X-Custom-URL: ["http://vmalert:8880"]
+        #- id: "testing"
+        #  name: "Testing"
+        #  options:         
+        #    X-Custom-URL: "http://mtesting:8065"
 
-      - id: "etcdkeeper"
-        name: "Etcdkeeper"
-        class: "fas fa-cog fa-fw"
-        nodes:
-          - id: "prod"
-            name: "Prod"
-            options:
-              X-Custom-URL: ["http://etcd:2379"]
+    - id: "alertmanager"
+      name: "Alertmanager"
+      class: "fa fa-th-large"
+      nodes:
+        - id: "alerts"
+          name: "Alerts"
+          options:
+            X-Custom-URL: ["http://alertmanager:9093"]
+        
+    - id: "netmap"
+      name: "Netmap"
+      class: "fa fa-sitemap"
+      nodes:
+        - id: "records"
+          name: "Records"
+          options:
+            X-Custom-URL: ["http://netserver:8084"]
+        - id: "exceptions"
+          name: "Exceptions"
+          options:
+            X-Custom-URL: ["http://netserver:8084"]
 
-    templates:
-      - url_matcher: "^/404.html"
-        target_page: "/404.html"
-      - url_matcher: "^/kubernetes/.*"
-        target_page: "/templates/alerts/alerts.html"
-      - url_matcher: "^/vmetrics/targets"
-        target_page: "/templates/vmetrics/targets.html"
-      - url_matcher: "^/vmetrics/alerts"
-        target_page: "/templates/vmetrics/alerts.html"
-      - url_matcher: "^/vmetrics/testing"
-        target_page: "/templates/vmetrics/testing.html"
-      - url_matcher: "^/alertmanager/alerts"
-        target_page: "/templates/alertmanager/alerts.html"
-      - url_matcher: "^/netmap/records.*"
-        target_page: "/templates/netmap/records.html"
-      - url_matcher: "^/netmap/exceptions.*"
-        target_page: "/templates/netmap/exceptions.html"
-      - url_matcher: "^/alerts.*"
-        target_page: "/templates/alerts/alerts.html"
-      - url_matcher: "^/monitoring.*"
-        target_page: "/templates/alerts/alerts.html"
-      - url_matcher: "^/etcdkeeper/.*/apps/[^/]+$"
-        target_page: "/templates/etcd/editor.html"
-      - url_matcher: "^/etcdkeeper"
-        target_page: "/templates/etcd/apps.html"
-      - url_matcher: "^/.*"
-        target_page: "/templates/main.html"
-          
+    - id: "etcdkeeper"
+      name: "Etcdkeeper"
+      class: "fas fa-cog fa-fw"
+      nodes:
+        - id: "prod"
+          name: "Prod"
+          options:
+            X-Custom-URL: ["http://etcd:2379"]
 
-    #extension_rules:
-    #  - source_matchers: ['{host=~"host-2.*"}']
-    #    labels:
-    #      test: "alert2" 
-    #  - source_matchers: ['{host=~"host-5.*"}']
-    #    labels:
-    #      test: "alert5" 
-    #      test1: "тестовый раздел" 
+  templates:
+    - url_matcher: "^/404.html"
+      target_page: "/404.html"
+    - url_matcher: "^/kubernetes/.*"
+      target_page: "/templates/alerts/alerts.html"
+    - url_matcher: "^/vmetrics/targets"
+      target_page: "/templates/vmetrics/targets.html"
+    - url_matcher: "^/vmetrics/alerts"
+      target_page: "/templates/vmetrics/alerts.html"
+    - url_matcher: "^/vmetrics/testing"
+      target_page: "/templates/vmetrics/testing.html"
+    - url_matcher: "^/alertmanager/alerts"
+      target_page: "/templates/alertmanager/alerts.html"
+    - url_matcher: "^/netmap/records.*"
+      target_page: "/templates/netmap/records.html"
+    - url_matcher: "^/netmap/exceptions.*"
+      target_page: "/templates/netmap/exceptions.html"
+    - url_matcher: "^/alerts.*"
+      target_page: "/templates/alerts/alerts.html"
+    - url_matcher: "^/monitoring.*"
+      target_page: "/templates/alerts/alerts.html"
+    - url_matcher: "^/etcdkeeper/.*/apps/[^/]+$"
+      target_page: "/templates/etcd/editor.html"
+    - url_matcher: "^/etcdkeeper"
+      target_page: "/templates/etcd/apps.html"
+    - url_matcher: "^/.*"
+      target_page: "/templates/main.html"
+        
+
+  #extension_rules:
+  #  - source_matchers: ['{host=~"host-2.*"}']
+  #    labels:
+  #      test: "alert2" 
+  #  - source_matchers: ['{host=~"host-5.*"}']
+  #    labels:
+  #      test: "alert5" 
+  #      test1: "тестовый раздел" 

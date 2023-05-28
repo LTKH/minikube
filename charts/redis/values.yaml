@@ -1,20 +1,18 @@
-# Default values for cdserver.
+# Default values for redis.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-cdserver: {}
 
 replicaCount: 1
 
 image:
-  repository: ghcr.io/ltkh/cdserver
+  repository: redis
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 imagePullSecrets: []
-nameOverride: "cdserver"
-fullnameOverride: "cdserver"
+nameOverride: ""
+fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -25,11 +23,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# Annotations to be added to pod
-podAnnotations: 
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "8083"
-  prometheus.io/path: "/metrics"
+podAnnotations: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -44,7 +38,7 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 8083
+  port: 6379
 
 ingress:
   enabled: false
@@ -62,17 +56,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: 
-  limits:
-    cpu: 50m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 128Mi
-
-podDisruptionBudget:
-  enabled: true
-  minAvailable: 1
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -86,15 +80,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-config:
-  global:
-    cert_file:        ""
-    cert_key:         ""
-
-  backends:
-    - backend:        "etcd"
-      id:             "etcd"
-      nodes:          ["http://etcd-headless:2379"]
-      username:       ""
-      password:       ""

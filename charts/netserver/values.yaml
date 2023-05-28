@@ -6,10 +6,6 @@ netserver: {}
 
 replicaCount: 1
 
-podDisruptionBudget:
-  enabled: true
-  minAvailable: 1
-
 image:
   repository: ghcr.io/ltkh/netserver
   pullPolicy: Always
@@ -73,6 +69,10 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
 
 autoscaling:
   enabled: false

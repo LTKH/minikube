@@ -6,10 +6,6 @@ alertmanager: {}
 
 replicaCount: 1
 
-podDisruptionBudget:
-  enabled: true
-  minAvailable: 1
-
 service:
   enabled: true
   annotations: {}
@@ -83,6 +79,10 @@ resources:
   requests:
     cpu: 50m
     memory: 128Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
 
 autoscaling:
   enabled: false

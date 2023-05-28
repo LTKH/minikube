@@ -81,6 +81,10 @@ resources:
 cache:
   mountPath: /cache
 
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
 autoscaling:
   enabled: false
   minReplicas: 1

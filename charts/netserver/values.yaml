@@ -93,11 +93,11 @@ config:
     cert_key:       ""
 
   db:
-    client:         "couchdb"
-    conn_string:    "http://couchdb:5984"
+    client:         "sqlite3"
+    conn_string:    "/storage/netmap.db"
     limit:          1000000
-    username:       "admin"
-    password:       "password"
+    #username:       "admin"
+    #password:       "password"
 
   notifier:
     urls:           ["http://alertmanager:9093"]

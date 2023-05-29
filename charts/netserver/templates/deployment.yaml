@@ -46,7 +46,11 @@ spec:
           volumeMounts:
             - mountPath: /netserver-conf
               name: netserver-volume
+            - name: storage
+              mountPath: /storage
       volumes:
         - name: netserver-volume
           configMap:
             name: netserver-cm
+        - name: storage
+          emptyDir: {}

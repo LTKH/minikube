@@ -187,7 +187,7 @@ config:
         - id: "prod"
           name: "Prod"
           options:
-            X-Custom-URL: ["http://etcd:2379"]
+            X-Custom-URL: ["http://etcd-headless:2379"]
 
   templates:
     - url_matcher: "^/404.html"

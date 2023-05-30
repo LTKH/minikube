@@ -36,9 +36,6 @@ Common labels
 {{- define "etcd.labels" -}}
 helm.sh/chart: {{ include "etcd.chart" . }}
 {{ include "etcd.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -48,6 +45,12 @@ Selector labels
 {{- define "etcd.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "etcd.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{- if .Values.applicationPartOf }}
+app.kubernetes.io/part-of: {{ .Values.applicationPartOf }}
+{{- end }}
 {{- end }}
 
 {{/*

@@ -46,13 +46,14 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 securityContext:
-  # capabilities:
-  #   drop:
-  #   - ALL
+  capabilities:
+    drop:
+      - ALL
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
+
 
 ingress:
   enabled: false

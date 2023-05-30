@@ -3,7 +3,6 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "alertmanager.fullname" . }}-pdb
-  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "alertmanager.labels" . | nindent 4 }}
 spec:

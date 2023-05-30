@@ -139,7 +139,7 @@ config:
       class: "fa fa-chart-area"
       nodes:
         - id: "alerts"
-          name: "Alerts"
+          name: "alerts"
           href: '/api/v1/alerts?match[]={alertgroup="telegraf"}'
           tags: ["host"]
 
@@ -147,8 +147,8 @@ config:
       name: "Kubernetes"
       class: "fa fa-cubes"
       nodes:
-        - id: "cluster-1"
-          name: "Cluster-1"
+        - id: "cluster"
+          name: "cluster"
           href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
           tags: ["node","namespace","pod"]
           
@@ -157,15 +157,15 @@ config:
       class: "fa fa-chart-area"
       nodes:
         - id: "targets"
-          name: "Targets"
+          name: "targets"
           options:
             X-Custom-URL: ["http://vmagent:8429"]
         - id: "alerts"
-          name: "Alerts"
+          name: "alerts"
           options:
             X-Custom-URL: ["http://vmalert:8880"]
         #- id: "testing"
-        #  name: "Testing"
+        #  name: "testing"
         #  options:         
         #    X-Custom-URL: "http://mtesting:8065"
 
@@ -174,7 +174,7 @@ config:
       class: "fa fa-th-large"
       nodes:
         - id: "alerts"
-          name: "Alerts"
+          name: "alerts"
           options:
             X-Custom-URL: ["http://alertmanager:9093"]
         
@@ -183,11 +183,11 @@ config:
       class: "fa fa-sitemap"
       nodes:
         - id: "records"
-          name: "Records"
+          name: "records"
           options:
             X-Custom-URL: ["http://netserver:8084"]
         - id: "exceptions"
-          name: "Exceptions"
+          name: "exceptions"
           options:
             X-Custom-URL: ["http://netserver:8084"]
 
@@ -195,8 +195,8 @@ config:
       name: "Etcdkeeper"
       class: "fas fa-cog fa-fw"
       nodes:
-        - id: "local"
-          name: "Local"
+        - id: "test"
+          name: "test"
           options:
             X-Custom-URL: ["http://etcd-headless:2379"]
 

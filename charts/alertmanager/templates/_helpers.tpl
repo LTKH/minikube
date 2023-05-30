@@ -35,12 +35,6 @@ Common labels
 */}}
 {{- define "alertmanager.labels" -}}
 {{ include "alertmanager.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-{{- if .Values.applicationPartOf }}
-app.kubernetes.io/part-of: {{ .Values.applicationPartOf }}
-{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -50,6 +44,12 @@ Selector labels
 {{- define "alertmanager.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "alertmanager.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{- if .Values.applicationPartOf }}
+app.kubernetes.io/part-of: {{ .Values.applicationPartOf }}
+{{- end }}
 {{- end }}
 
 {{/*

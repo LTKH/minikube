@@ -70,6 +70,16 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+livenessProbe:
+  httpGet:
+    path: /-/healthy
+    port: http
+
+readinessProbe:
+  httpGet:
+    path: /-/ready
+    port: http
+
 storage:
   path: /alertmanager
 

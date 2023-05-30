@@ -54,7 +54,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
-
 ingress:
   enabled: false
   className: ""

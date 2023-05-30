@@ -195,8 +195,8 @@ config:
       name: "Etcdkeeper"
       class: "fas fa-cog fa-fw"
       nodes:
-        - id: "test"
-          name: "test"
+        - id: "prod"
+          name: "prod"
           options:
             X-Custom-URL: ["http://etcd-headless:2379"]
 

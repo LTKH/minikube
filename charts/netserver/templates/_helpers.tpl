@@ -35,9 +35,6 @@ Common labels
 */}}
 {{- define "netserver.labels" -}}
 {{ include "netserver.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -47,6 +44,12 @@ Selector labels
 {{- define "netserver.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "netserver.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{- if .Values.applicationPartOf }}
+app.kubernetes.io/part-of: {{ .Values.applicationPartOf }}
+{{- end }}
 {{- end }}
 
 {{/*

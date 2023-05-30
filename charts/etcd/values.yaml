@@ -12,7 +12,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "3.5.9"
 
-clusterDomain: cluster.local
+clusterDomainSuffix: cluster.local
 
 ## Authentication parameters
 ##

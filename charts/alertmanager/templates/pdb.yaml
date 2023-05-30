@@ -1,8 +1,8 @@
 {{- if .Values.podDisruptionBudget.enabled }}
-apiVersion: policy/v1
+apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ template "alertmanager.fullname" . }}
+  name: {{ template "alertmanager.fullname" . }}-pdb
   labels:
     {{- include "alertmanager.labels" . | nindent 4 }}
 spec:

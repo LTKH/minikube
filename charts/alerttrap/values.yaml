@@ -64,6 +64,16 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+livenessProbe:
+  httpGet:
+    path: /-/healthy
+    port: 8081
+
+readinessProbe:
+  httpGet:
+    path: /-/healthy
+    port: 8081
+
 resources:
   limits:
     cpu: 50m

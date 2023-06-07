@@ -23,7 +23,7 @@ spec:
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml ($.Values.grafana.imagePullSecrets | default . ) | nindent 8 }}
       {{- end }}
       {{- with .Values.priorityClassName }}
       priorityClassName: {{ $.Values.priorityClassName }}
@@ -44,13 +44,48 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "password"
+            - name: GF_UNIFIED_ALERTING_ENABLED
+              value: "false"
+            - name: GF_ALERTING_ENABLED
+              value: "true"
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           volumeMounts:
-            - name: data
-              mountPath: /var/lib/grafana
+            - mountPath: /var/lib/grafana
+              name: grafana-pv
+            {{- if .Values.datasources }}
+            {{- range $key, $value := .Values.datasources }}
+            - mountPath: /etc/grafana/provisioning/datasources/{{ $key }}
+              name: grafana-volume
+              subPath: {{ $key }}
+            {{- end -}}
+            {{- end }}
+            {{- if .Values.notifiers }}
+            {{- range $key, $value := .Values.notifiers }}
+            - mountPath: /etc/grafana/provisioning/notifiers/{{ $key }}
+              name: grafana-volume
+              subPath: {{ $key }}
+            {{- end -}}
+            {{- end }}
+            {{- if .Values.dashboards }}
+            {{- range $key, $value := .Values.dashboards }}
+            - mountPath: /etc/grafana/provisioning/dashboards/{{ $key }}
+              name: grafana-volume
+              subPath: {{ $key }}
+            {{- end -}}
+            {{- end }}
+            {{- range $path, $_ :=  .Files.Glob  "dashboards/*" }}
+            - mountPath: /var/lib/grafana/dashboards/{{ base $path }}
+              name: {{ print "grafana-" (regexReplaceAll "[._]+" (base $path) "-") }}
+              subPath: {{ base $path }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -64,5 +99,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: data
-          emptyDir: {}
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: {{ template "grafana.fullname" . }}-pvc
+        - name: grafana-volume
+          configMap:
+            name: {{ template "grafana.fullname" . }}-cm
+        {{- range $path, $_ :=  .Files.Glob  "dashboards/*" }}
+        - name: {{ print "grafana-" (regexReplaceAll "[._]+" (base $path) "-") }}
+          configMap:
+            name: {{ print "grafana-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
+        {{- end }}

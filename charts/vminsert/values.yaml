@@ -13,8 +13,8 @@ image:
   tag: "v1.82.1-cluster"
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "vminsert"
+fullnameOverride: "vminsert"
 
 # Extra command line arguments for vmselect component
 extraArgs:
@@ -50,6 +50,8 @@ securityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   type: ClusterIP

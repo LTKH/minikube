@@ -40,8 +40,8 @@ spec:
         {{- $releaseNamespace := .Release.Namespace }}
         - name: {{ include "etcd.fullname" . }}
           {{- $image := coalesce .Values.etcd.image .Values.image }}
-          image: "{{ $image.repository }}:{{ $image.tag }}"
-          imagePullPolicy: {{ $image.pullPolicy }}
+          image: "{{ default .Values.image.repository $image.repository }}:{{ default .Values.image.tag $image.tag }}"
+          imagePullPolicy: {{ default .Values.image.pullPolicy $image.pullPolicy }}
           securityContext:
             {{- toYaml (.Values.etcd.securityContext | default .Values.securityContext) | nindent 12 }}
           resources:

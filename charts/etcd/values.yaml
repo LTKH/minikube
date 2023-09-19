@@ -92,8 +92,8 @@ containerPorts:
   peer: 2380
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "etcd"
+fullnameOverride: "etcd"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -121,6 +121,8 @@ securityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1001
+  seccompProfile:
+    type: RuntimeDefault
 
 ingress:
   enabled: false

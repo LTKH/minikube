@@ -32,7 +32,7 @@ server:
     repository: victoriametrics/vmalert
     tag: "v1.69.0" # rewrites Chart.AppVersion
     pullPolicy: IfNotPresent
-  nameOverride: ""
+  nameOverride: "vmalert"
   fullnameOverride: "vmalert"
 
   ## See `kubectl explain poddisruptionbudget.spec` for more
@@ -192,6 +192,8 @@ server:
     # readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   resources:
     {}

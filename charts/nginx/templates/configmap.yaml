@@ -4,8 +4,13 @@ kind: ConfigMap
 metadata:
   name: {{ template "nginx.fullname" . }}-http-cm
 data:
-{{- range $path, $bytes := .Files.Glob  "config_tmpl/**" }}
-{{ base $path | indent 2 }}: |
-{{ $file := $.Files.Get $path -}}
-{{ tpl $file $ | indent 4 }}
-{{- end -}}
+  nginx.conf: |-
+    server {
+        listen 8000;
+        resolver 127.0.0.1:53 ipv6=off valid=10s;
+        set $upstream http://alerttrap:8081;
+        location / {
+            proxy_pass $upstream;
+            proxy_http_version 1.1;
+        }
+    }

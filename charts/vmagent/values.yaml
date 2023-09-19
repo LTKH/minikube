@@ -35,8 +35,8 @@ image:
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "vmagent"
+fullnameOverride: "vmagent"
 
 containerWorkingDir: "/"
 
@@ -141,6 +141,8 @@ securityContext:
   # readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   enabled: true

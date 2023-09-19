@@ -53,6 +53,12 @@ spec:
               value: "false"
             - name: GF_ALERTING_ENABLED
               value: "true"
+            - name: GF_RENDERING_SERVER_URL
+              value: "http://renderer:8081/render"
+            #- name: GF_RENDERING_CALLBACK_URL
+            #  value: "http://grafana:{{ .Values.service.port }}/"
+            - name: GF_LOG_FILTERS
+              value: "rendering:debug"
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

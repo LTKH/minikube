@@ -144,18 +144,20 @@ livenessProbe:
   tcpSocket:
     port: 2379
   initialDelaySeconds: 5
+  #timeoutSeconds: 5
   periodSeconds: 10
 
 readinessProbe:
   tcpSocket:
     port: 2379
   initialDelaySeconds: 5
+  #timeoutSeconds: 5
   periodSeconds: 10
 
 resources:
   limits:
     cpu: 100m
-    memory: 256Mi  
+    memory: 128Mi  
   requests:
     cpu: 100m
     memory: 128Mi 

@@ -45,12 +45,6 @@ spec:
             - '-web.listen-address=:{{ .Values.service.port }}'
             - '-web.dir=/data/web'
             - '-config.file=/alerttrap-conf/alerttrap.yaml'
-          resources:
-            {{- if and .Values.alerttrap .Values.alerttrap.resources }}
-            {{- toYaml .Values.alerttrap.resources | nindent 12 }}
-            {{- else }}
-            {{- toYaml .Values.resources | nindent 12 }}
-            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

@@ -79,10 +79,10 @@ readinessProbe:
 resources:
   limits:
     cpu: 50m
-    memory: 128Mi
+    memory: 64Mi
   requests:
     cpu: 50m
-    memory: 128Mi
+    memory: 64Mi
 
 podDisruptionBudget:
   enabled: true

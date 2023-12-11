@@ -38,6 +38,7 @@ serviceAccount:
 
 # Annotations to be added to pod
 podAnnotations: 
+  logging: "PLAIN" 
   prometheus.io/scrape: "true"
   prometheus.io/port: "9093"
   prometheus.io/path: "/metrics"

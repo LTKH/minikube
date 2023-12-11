@@ -30,7 +30,7 @@ spec:
       containers:
         {{- $etcdFullname := include "etcd.fullname" . }}
         {{- $etcdHeadlessServiceName := (printf "%s-%s" $etcdFullname "headless" | trunc 63 | trimSuffix "-") }}
-        {{- $clusterDomain := .Values.clusterDomainSuffix }}
+        {{- $clusterDomain := .Values.clusterDomainSuffix | default "cluster.local" }}
         {{- $etcdPeerProtocol := include "etcd.peerProtocol" . }}
         {{- $etcdPeerPort := int .Values.containerPorts.peer }}
         {{- $etcdClientProtocol := include "etcd.clientProtocol" . }}

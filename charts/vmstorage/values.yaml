@@ -31,7 +31,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+podAnnotations: 
+  logging: "PLAIN"
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -81,18 +82,19 @@ readinessProbe:
     path: /health
     port: 8482
 
+# Minimal
 resources:
   limits:
     cpu: 100m
-    memory: 512Mi
+    memory: 1024Mi
   requests:
     cpu: 100m
-    memory: 512Mi
+    memory: 1024Mi
 
 storage:
   mountPath: /storage
   subPath: ""
-  size: 8Gi
+  size: 1Gi
 
 autoscaling:
   enabled: false

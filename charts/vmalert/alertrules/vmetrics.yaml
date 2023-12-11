@@ -122,7 +122,7 @@ groups:
         When vmstorage constantly hits the limit it means that storage is overloaded and requires more CPU."
 
   - alert: tooManyLogs
-    expr: sum(increase(vm_log_messages_total{level!="info"}[5m])) by (job, instance) > 0
+    expr: sum(increase(vm_log_messages_total{level!="info"}[5m])) by (job, instance, namespace, container) > 0
     for: 15m
     labels:
       severity: warning
@@ -245,7 +245,7 @@ groups:
       remote-write server data blocks. Check the logs to find the reason for rejects."
 
   - alert: tooManyScrapeErrors
-    expr: sum(increase(vm_promscrape_scrapes_failed_total[5m])) by (job, instance) > 0
+    expr: sum(increase(vm_promscrape_scrapes_failed_total[5m])) by (job, instance, namespace, container) > 0
     for: 15m
     labels:
       severity: warning

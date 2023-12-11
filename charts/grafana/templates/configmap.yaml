@@ -6,26 +6,23 @@ metadata:
   #namespace: default
 data:
 
-{{- if .Values.datasources }}
-{{ $root := . }}
-  {{- range $key, $value := .Values.datasources }}
+{{- $datasources := coalesce .Values.grafana.datasources .Values.datasources }}
+{{- $root := . }}
+{{- range $key, $value := $datasources | default dict }}
   {{ $key }}: |
 {{ tpl (toYaml $value | indent 4) $root }}
-  {{- end -}}
 {{- end -}}
 
-{{- if .Values.notifiers }}
-  {{- range $key, $value := .Values.notifiers }}
+{{- $notifiers := coalesce .Values.grafana.notifiers .Values.notifiers }}
+{{- range $key, $value := $notifiers | default dict }}
   {{ $key }}: |
 {{ toYaml $value | indent 4 }}
-  {{- end -}}
 {{- end -}}
 
-{{- if .Values.dashboards }}
-  {{- range $key, $value := .Values.dashboards }}
+{{- $dashboards := coalesce .Values.grafana.dashboards .Values.dashboards }}
+{{- range $key, $value := $dashboards | default dict }}
   {{ $key }}: |
 {{ toYaml $value | indent 4 }}
-  {{- end -}}
 {{- end -}}
 
 {{- range $path, $val := .Files.Glob  "dashboards/*" }}

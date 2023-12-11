@@ -27,6 +27,7 @@ serviceAccount:
 
 # Annotations to be added to pod
 podAnnotations: 
+  logging: "PLAIN"
   prometheus.io/scrape: "true"
   prometheus.io/port: "8081"
   prometheus.io/path: "/metrics"
@@ -138,7 +139,7 @@ config:
   menu:
     - id: "monitoring"
       name: "Monitoring"
-      class: "fa fa-chart-area"
+      class: "fa bar-chart-outline"
       nodes:
         - id: "alerts"
           name: "alerts"
@@ -149,10 +150,10 @@ config:
       name: "Kubernetes"
       class: "fa fa-cubes"
       nodes:
-        - id: "cluster"
-          name: "cluster"
+        - id: "local"
+          name: "local"
           href: '/api/v1/alerts?match[]={alertgroup!="telegraf"}'
-          tags: ["node","namespace","pod"]
+          tags: ["namespace","pod"]
           
     - id: "vmetrics"
       name: "VMetrics"
@@ -166,10 +167,6 @@ config:
           name: "alerts"
           options:
             X-Custom-URL: ["http://vmalert:8880"]
-        #- id: "testing"
-        #  name: "testing"
-        #  options:         
-        #    X-Custom-URL: "http://mtesting:8065"
 
     - id: "alertmanager"
       name: "Alertmanager"
@@ -192,6 +189,16 @@ config:
           name: "exceptions"
           options:
             X-Custom-URL: ["http://netserver:8084"]
+    
+    - id: "testing"
+      name: "Testing"
+      class: "fas fa-list"
+      nodes:
+        - id: "testing"
+          name: "Testing"
+          options:         
+            X-Custom-URL: "http://mtesting:8065"
+            X-Custom-WS: "ws://mtesting:8065/ws"
 
     - id: "etcdkeeper"
       name: "Etcdkeeper"
@@ -211,8 +218,8 @@ config:
       target_page: "/templates/vmetrics/targets.html"
     - url_matcher: "^/vmetrics/alerts"
       target_page: "/templates/vmetrics/alerts.html"
-    - url_matcher: "^/vmetrics/testing"
-      target_page: "/templates/vmetrics/testing.html"
+    - url_matcher: "^/testing/testing"
+      target_page: "/templates/testing/testing.html"
     - url_matcher: "^/alertmanager/alerts"
       target_page: "/templates/alertmanager/alerts.html"
     - url_matcher: "^/netmap/records.*"
@@ -229,7 +236,6 @@ config:
       target_page: "/templates/etcd/apps.html"
     - url_matcher: "^/.*"
       target_page: "/templates/main.html"
-        
 
   #extension_rules:
   #  - source_matchers: ['{host=~"host-2.*"}']

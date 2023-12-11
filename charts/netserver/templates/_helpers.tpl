@@ -47,9 +47,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-{{- if .Values.applicationPartOf }}
-app.kubernetes.io/part-of: {{ .Values.applicationPartOf }}
-{{- end }}
+app.kubernetes.io/part-of: {{ .Values.applicationPartOf | default .Release.Namespace }}
 {{- end }}
 
 {{/*

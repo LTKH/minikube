@@ -40,7 +40,7 @@ groups:
       description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: containerCpuUsage
-    expr: (sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) > 80
+    expr: (sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name, namespace, container) * 100) > 80
     for: 2m
     labels:
       severity: warning
@@ -50,7 +50,7 @@ groups:
 
   # See https://medium.com/faun/how-much-is-too-much-the-linux-oomkiller-and-used-memory-d32186f29c9d
   - alert: containerMemoryUsage
-    expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80
+    expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name, namespace, container, pod) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name, namespace, container, pod) * 100) > 80
     for: 2m
     labels:
       severity: warning

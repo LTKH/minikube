@@ -25,7 +25,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations:
+podAnnotations: 
+  logging: "PLAIN"
   prometheus.io/scrape: "true"
   prometheus.io/port: "8084"
   prometheus.io/path: "/metrics"
@@ -69,11 +70,13 @@ livenessProbe:
   httpGet:
     path: /-/healthy
     port: 8084
+  timeoutSeconds: 5
 
 readinessProbe:
   httpGet:
     path: /-/healthy
     port: 8084
+  timeoutSeconds: 5
 
 resources:
   limits:
@@ -106,9 +109,10 @@ config:
     cert_key:       ""
 
   db:
-    client:         "sqlite3"
-    conn_string:    "/storage/netmap.db"
+    client:         "cache"
     limit:          1000000
+    #client:         "sqlite3"
+    #conn_string:    "/storage/netmap.db"
     #username:       "admin"
     #password:       "password"
 

@@ -25,7 +25,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations:
+podAnnotations: 
+  logging: "PLAIN"
   prometheus.io/scrape: "true"
   prometheus.io/port: "8429"
   prometheus.io/path: "/metrics"
@@ -76,10 +77,11 @@ readinessProbe:
     path: /health
     port: 8429
 
+# Minimal
 resources:
   limits:
-    cpu: 50m
-    memory: 256Mi
+    cpu: 100m
+    memory: 512Mi
   requests:
     cpu: 50m
     memory: 256Mi

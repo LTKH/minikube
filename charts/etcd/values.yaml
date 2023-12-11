@@ -106,6 +106,7 @@ serviceAccount:
 
 # Annotations to be added to pod
 podAnnotations: 
+  logging: "PLAIN"
   prometheus.io/scrape: "true"
   prometheus.io/port: "2379"
   prometheus.io/path: "/metrics"
@@ -154,13 +155,14 @@ readinessProbe:
   #timeoutSeconds: 5
   periodSeconds: 10
 
+# Minimal
 resources:
   limits:
     cpu: 100m
-    memory: 128Mi  
+    memory: 512Mi  
   requests:
-    cpu: 100m
-    memory: 128Mi 
+    cpu: 50m
+    memory: 256Mi
   
 storage:
   path: /bitnami/etcd/data

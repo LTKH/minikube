@@ -1,241 +1,33 @@
-# -- Overrides the chart's name
-nameOverride: null
+# Default values for promtail.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-# -- Overrides the chart's computed fullname
-fullnameOverride: null
+promtail: {}
 
-daemonset:
-  # -- Deploys Promtail as a DaemonSet
-  enabled: true
-
-deployment:
-  # -- Deploys Promtail as a Deployment
-  enabled: false
-  replicaCount: 1
-  autoscaling:
-    # -- Creates a HorizontalPodAutoscaler for the deployment
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage:
-
-initContainer: []
-  # # -- Specifies whether the init container for setting inotify max user instances is to be enabled
-  # - name: init
-  #   # -- Docker registry, image and tag for the init container image
-  #   image: docker.io/busybox:1.33
-  #   # -- Docker image pull policy for the init container image
-  #   imagePullPolicy: IfNotPresent
-  #   # -- The inotify max user instances to configure
-  #   command:
-  #     - sh
-  #     - -c
-  #     - sysctl -w fs.inotify.max_user_instances=128
-  #   securityContext:
-  #     privileged: true
+replicaCount: 1
 
 image:
-  # -- The Docker registry
-  registry: docker.io
-  # -- Docker image repository
   repository: grafana/promtail
-  # -- Overrides the image tag whose default is the chart's appVersion
-  tag: null
-  # -- Docker image pull policy
   pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "2.6.1"
 
-# -- Image pull secrets for Docker images
 imagePullSecrets: []
-
-# -- Annotations for the DaemonSet
-annotations: {}
-
-# -- The update strategy for the DaemonSet
-updateStrategy: {}
-
-# -- Pod labels
-podLabels: {}
-
-# -- Pod annotations
-podAnnotations: {}
-#  prometheus.io/scrape: "true"
-#  prometheus.io/port: "http-metrics"
-
-# -- The name of the PriorityClass
-priorityClassName: null
-
-# -- Liveness probe
-livenessProbe: {}
-
-# -- Readiness probe
-# @default -- See `values.yaml`
-readinessProbe:
-  failureThreshold: 5
-  httpGet:
-    path: /ready
-    port: http-metrics
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  successThreshold: 1
-  timeoutSeconds: 1
-
-# -- Resource requests and limits
-resources: {}
-#  limits:
-#    cpu: 200m
-#    memory: 128Mi
-#  requests:
-#    cpu: 100m
-#    memory: 128Mi
-
-# -- The security context for pods
-podSecurityContext:
-  runAsUser: 0
-  runAsGroup: 0
-
-# -- The security context for containers
-containerSecurityContext:
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop:
-      - ALL
-  allowPrivilegeEscalation: false
-
-rbac:
-  # -- Specifies whether RBAC resources are to be created
-  create: true
-  # -- Specifies whether a PodSecurityPolicy is to be created
-  pspEnabled: false
+nameOverride: "promtail"
+fullnameOverride: "promtail"
 
 serviceAccount:
-  # -- Specifies whether a ServiceAccount should be created
+  # Specifies whether a service account should be created
   create: true
-  # -- The name of the ServiceAccount to use.
-  # If not set and `create` is true, a name is generated using the fullname template
-  name: null
-  # -- Image pull secrets for the service account
-  imagePullSecrets: []
-  # -- Annotations for the service account
+  # Annotations to add to the service account
   annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
-# -- Node selector for pods
-nodeSelector: {}
+podAnnotations: 
+  logging: "PLAIN"
 
-# -- Affinity configuration for pods
-affinity: {}
-
-# -- Tolerations for pods. By default, pods will be scheduled on master/control-plane nodes.
-tolerations:
-  - key: node-role.kubernetes.io/master
-    operator: Exists
-    effect: NoSchedule
-  - key: node-role.kubernetes.io/control-plane
-    operator: Exists
-    effect: NoSchedule
-
-# -- Default volumes that are mounted into pods. In most cases, these should not be changed.
-# Use `extraVolumes`/`extraVolumeMounts` for additional custom volumes.
-# @default -- See `values.yaml`
-defaultVolumes:
-  - name: run
-    hostPath:
-      path: /run/promtail
-  - name: containers
-    hostPath:
-      path: /var/lib/docker/containers
-  - name: pods
-    hostPath:
-      path: /var/log/pods
-
-# -- Default volume mounts. Corresponds to `volumes`.
-# @default -- See `values.yaml`
-defaultVolumeMounts:
-  - name: run
-    mountPath: /run/promtail
-  - name: containers
-    mountPath: /var/lib/docker/containers
-    readOnly: true
-  - name: pods
-    mountPath: /var/log/pods
-    readOnly: true
-
-# Extra volumes to be added in addition to those specified under `defaultVolumes`.
-extraVolumes: []
-
-# Extra volume mounts together. Corresponds to `extraVolumes`.
-extraVolumeMounts: []
-
-# Extra args for the Promtail container.
-extraArgs: []
-# -- Example:
-# -- extraArgs:
-# --   - -client.external-labels=hostname=$(HOSTNAME)
-
-# -- Extra environment variables
-extraEnv: []
-
-# -- Extra environment variables from secrets or configmaps
-extraEnvFrom: []
-
-# ServiceMonitor configuration
-serviceMonitor:
-  # -- If enabled, ServiceMonitor resources for Prometheus Operator are created
-  enabled: false
-  # -- Alternative namespace for ServiceMonitor resources
-  namespace: null
-  # -- Namespace selector for ServiceMonitor resources
-  namespaceSelector: {}
-  # -- ServiceMonitor annotations
-  annotations: {}
-  # -- Additional ServiceMonitor labels
-  labels: {}
-  # -- ServiceMonitor scrape interval
-  interval: null
-  # -- ServiceMonitor scrape timeout in Go duration format (e.g. 15s)
-  scrapeTimeout: null
-  # -- ServiceMonitor relabel configs to apply to samples before scraping
-  # https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#relabelconfig
-  # (defines `relabel_configs`)
-  relabelings: []
-  # -- ServiceMonitor relabel configs to apply to samples as the last
-  # step before ingestion
-  # https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#relabelconfig
-  # (defines `metric_relabel_configs`)
-  metricRelabelings: []
-
-# Extra containers created as part of a Promtail Deployment resource
-# - spec for Container:
-#   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#container-v1-core
-#
-# Note that the key is used as the `name` field, i.e. below will create a
-# container named `promtail-proxy`.
-extraContainers: {}
-  # promtail-proxy:
-  #   image: nginx
-  #   ...
-
-# -- Configure additional ports and services. For each configured port, a corresponding service is created.
-# See values.yaml for details
-extraPorts: {}
-#  syslog:
-#    name: tcp-syslog
-#    containerPort: 1514
-#    protocol: TCP
-#    service:
-#      type: ClusterIP
-#      clusterIP: null
-#      port: 1514
-#      externalIPs: []
-#      nodePort: null
-#      annotations: {}
-#      labels: {}
-#      loadBalancerIP: null
-#      loadBalancerSourceRanges: []
-#      externalTrafficPolicy: null
-
-# -- PodSecurityPolicy configuration.
-# @default -- See `values.yaml`
 podSecurityPolicy:
   privileged: true
   allowPrivilegeEscalation: true
@@ -257,6 +49,115 @@ podSecurityPolicy:
   readOnlyRootFilesystem: true
   requiredDropCapabilities:
     - ALL
+
+#securityContext:
+#  capabilities:
+#    drop:
+#      - ALL
+#  allowPrivilegeEscalation: false
+#  readOnlyRootFilesystem: true
+#  #runAsNonRoot: true
+#  #runAsGroup: 1000
+#  #runAsUser: 1000
+#  seccompProfile:
+#    type: RuntimeDefault
+
+# -- The security context for pods
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+# -- The security context for containers
+securityContext:
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 3101
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- Resource requests and limits
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+livenessProbe:
+  tcpSocket:
+    port: http-metrics
+  initialDelaySeconds: 5
+  periodSeconds: 15
+  timeoutSeconds: 5
+
+readinessProbe:
+  tcpSocket:
+    port: http-metrics
+  initialDelaySeconds: 5
+  periodSeconds: 15
+  timeoutSeconds: 5
+
+# -- Default volume mounts. Corresponds to `volumes`.
+defaultVolumeMounts:
+  - name: run
+    mountPath: /run/promtail
+
+# -- Default volumes that are mounted into pods. In most cases, these should not be changed.
+# Use `extraVolumes`/`extraVolumeMounts` for additional custom volumes.
+defaultVolumes:
+  - name: run
+    emptyDir: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Specifies whether a PodSecurityPolicy is to be created
+  pspEnabled: false
+
+serviceAccount:
+  # -- Specifies whether a ServiceAccount should be created
+  create: true
+  # -- The name of the ServiceAccount to use.
+  # If not set and `create` is true, a name is generated using the fullname template
+  name: null
+  # -- Image pull secrets for the service account
+  imagePullSecrets: []
+  # -- Annotations for the service account
+  annotations: {}
 
 # -- Section for crafting Promtails config file. The only directly relevant value is `config.file`
 # which is a templated string that references the other values and snippets below this key.
@@ -406,34 +307,3 @@ config:
 
     limits_config:
       {{- tpl .Values.config.snippets.extraLimitsConfig . | nindent 2 }}
-
-networkPolicy:
-  # -- Specifies whether Network Policies should be created
-  enabled: false
-  metrics:
-    # -- Specifies the Pods which are allowed to access the metrics port.
-    # As this is cross-namespace communication, you also neeed the namespaceSelector.
-    podSelector: {}
-    # -- Specifies the namespaces which are allowed to access the metrics port
-    namespaceSelector: {}
-    # -- Specifies specific network CIDRs which are allowed to access the metrics port.
-    # In case you use namespaceSelector, you also have to specify your kubelet networks here.
-    # The metrics ports are also used for probes.
-    cidrs: []
-  k8sApi:
-    # -- Specify the k8s API endpoint port
-    port: 8443
-    # -- Specifies specific network CIDRs you want to limit access to
-    cidrs: []
-
-# -- Extra K8s manifests to deploy
-extraObjects: []
-  # - apiVersion: "kubernetes-client.io/v1"
-  #   kind: ExternalSecret
-  #   metadata:
-  #     name: promtail-secrets
-  #   spec:
-  #     backendType: gcpSecretsManager
-  #     data:
-  #       - key: promtail-oauth2-creds
-  #         name: client_secret

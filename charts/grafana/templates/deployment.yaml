@@ -66,24 +66,21 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-pv
-            {{- $datasources := coalesce .Values.grafana.datasources .Values.datasources }}
-            {{- range $key, $value := $datasources | default dict }}
-            - mountPath: /etc/grafana/provisioning/datasources/{{ $key }}
+            - mountPath: /usr/share/grafana/conf/defaults.ini
               name: grafana-volume
-              subPath: {{ $key }}
-            {{- end -}}
-            {{- $notifiers := coalesce .Values.grafana.notifiers .Values.notifiers }}
-            {{- range $key, $value := $notifiers | default dict }}
-            - mountPath: /etc/grafana/provisioning/notifiers/{{ $key }}
+              subPath: defaults.ini
+            - mountPath: /usr/share/grafana/conf/ldap.toml
               name: grafana-volume
-              subPath: {{ $key }}
-            {{- end -}}
-            {{- $dashboards := coalesce .Values.grafana.dashboards .Values.dashboards }}
-            {{- range $key, $value := $dashboards | default dict }}
-            - mountPath: /etc/grafana/provisioning/dashboards/{{ $key }}
+              subPath: ldap.toml
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
               name: grafana-volume
-              subPath: {{ $key }}
-            {{- end -}}
+              subPath: datasources.yaml
+            - mountPath: /etc/grafana/provisioning/notifiers/notifiers.yaml
+              name: grafana-volume
+              subPath: notifiers.yaml
+            - mountPath: /etc/grafana/provisioning/dashboards/providers.yaml
+              name: grafana-volume
+              subPath: providers.yaml
             {{- range $path, $_ :=  .Files.Glob  "dashboards/*" }}
             - mountPath: /var/lib/grafana/dashboards/{{ base $path }}
               name: {{ print "grafana-" (regexReplaceAll "[._]+" (base $path) "-") }}

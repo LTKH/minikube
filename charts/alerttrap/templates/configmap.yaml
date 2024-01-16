@@ -7,4 +7,4 @@ metadata:
     {{- include "alerttrap.labels" . | nindent 4 }}
 data:
   alerttrap.yaml: |-
-    {{- toYaml (.Values.alerttrap.config | default .Values.config) | nindent 4 }}
+    {{- toYaml (mergeOverwrite .Values.config (.Values.alerttrap.config | default dict)) | nindent 4 }}

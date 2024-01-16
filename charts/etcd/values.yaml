@@ -141,19 +141,19 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-#livenessProbe:
-#  tcpSocket:
-#    port: 2379
-#  initialDelaySeconds: 5
-#  timeoutSeconds: 5
-#  periodSeconds: 10
+livenessProbe:
+  tcpSocket:
+    port: 2379
+  initialDelaySeconds: 5
+  timeoutSeconds: 5
+  periodSeconds: 10
 
-#readinessProbe:
-#  tcpSocket:
-#    port: 2379
-#  initialDelaySeconds: 5
-#  timeoutSeconds: 5
-#  periodSeconds: 10
+readinessProbe:
+  tcpSocket:
+    port: 2379
+  initialDelaySeconds: 5
+  timeoutSeconds: 5
+  periodSeconds: 10
 
 # Minimal
 resources:
@@ -166,7 +166,7 @@ resources:
   
 storage:
   path: /bitnami/etcd/data
-  size: 1Gi
+  size: 500Mi
 
 nodeSelector: {}
 

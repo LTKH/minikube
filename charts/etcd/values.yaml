@@ -142,18 +142,20 @@ ingress:
   #      - chart-example.local
 
 livenessProbe:
+  failureThreshold: 5
   tcpSocket:
     port: 2379
-  initialDelaySeconds: 5
-  timeoutSeconds: 5
+  initialDelaySeconds: 10
   periodSeconds: 10
+  timeoutSeconds: 5
 
 readinessProbe:
+  failureThreshold: 5
   tcpSocket:
     port: 2379
-  initialDelaySeconds: 5
-  timeoutSeconds: 5
+  initialDelaySeconds: 10
   periodSeconds: 10
+  timeoutSeconds: 5
 
 # Minimal
 resources:

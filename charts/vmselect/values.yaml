@@ -26,8 +26,6 @@ vmstorage:
   fullname: vmstorage
   replicaCount: 2
 
-clusterDomainSuffix: cluster.local
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

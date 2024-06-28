@@ -1,16 +1,15 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "vmalert.fullname" . }}
   labels:
     {{- include "vmalert.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "vmalert.selectorLabels" . | nindent 6 }}
+  serviceName: {{ template "vmalert.fullname" . }}-headless
   template:
     metadata:
       annotations:

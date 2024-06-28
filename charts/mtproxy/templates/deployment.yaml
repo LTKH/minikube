@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mtproxy.fullname" . }}
+  labels:
+    {{- include "mtproxy.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mtproxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      labels:
+        {{- include "mtproxy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ $.Values.priorityClassName }}
+      {{- end }}
+      serviceAccountName: {{ include "mtproxy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- $image := coalesce .Values.mtproxy.image .Values.image }}
+          image: "{{ default .Values.image.repository $image.repository }}:{{ default .Values.image.tag $image.tag }}"
+          imagePullPolicy: {{ default .Values.image.pullPolicy $image.pullPolicy }}
+          securityContext:
+            {{- toYaml (.Values.mtproxy.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.mtproxy.resources | default .Values.resources) | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: web
+          args:
+            - '-web.listen-address=:{{ .Values.service.port }}'
+            - '-config.file=/mtproxy-conf/mtproxy.yml'
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          volumeMounts:
+            - mountPath: /mtproxy-conf
+              name: mtproxy-volume
+      volumes:
+        - name: mtproxy-volume
+          configMap:
+            name: mtproxy-cm

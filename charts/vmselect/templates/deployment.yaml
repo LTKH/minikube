@@ -6,7 +6,7 @@ metadata:
     {{- include "vmselect.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ default .Values.replicaCount .Values.vmselect.replicaCount }}
   {{- end }}
   selector:
     matchLabels:

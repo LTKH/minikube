@@ -2,12 +2,21 @@ WEB_UI_USERNAME=admin
 WEB_UI_PASSWORD=password
 
 NAMESPACE=default
+CLUSTER_IP=10.107.146.91
 
 BASE_DIR=$(shell pwd)
+
+export PYTHONDONTWRITEBYTECODE=1
 
 all: 
 	${MAKE} create
 	${MAKE} install
+
+start:
+	minikube start
+
+stop:
+	minikube stop
 
 create:
 	printf "\033[32m------------------ applying settings\033[0m\n"
@@ -28,3 +37,8 @@ uninstall:
 	  printf "\033[32m------------------ uninstall $${i%%/}\033[0m\n"; \
 	  cd ${BASE_DIR} && helm -n ${NAMESPACE} uninstall $${i%%/}; \
 	done
+
+test:
+	python3 -m pip install --user pytest requests #toml json_diff
+	python3 -m pytest --cluster=${CLUSTER_IP} -v ${BASE_DIR}/tests/pytest
+	k6 run -e CLUSTER_IP=${CLUSTER_IP} ${BASE_DIR}/tests/k6/netserver/test_netserver_api.js 

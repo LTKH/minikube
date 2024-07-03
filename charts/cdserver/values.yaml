@@ -110,5 +110,11 @@ config:
     - backend:        "etcd"
       id:             "etcd"
       nodes:          ["http://etcd-headless:2379"]
-      username:       ""
-      password:       ""
+      write:
+        username:     ""
+        password:     ""
+        keys:         [".*"]
+      read:
+        username:     ""
+        password:     ""
+        keys:         [".*"]

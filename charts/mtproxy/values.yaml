@@ -79,12 +79,14 @@ readinessProbe:
   timeoutSeconds: 5
 
 resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
   limits:
     cpu: 50m
     memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 128Mi
+    ephemeral-storage: 64Mi
 
 podDisruptionBudget:
   enabled: true

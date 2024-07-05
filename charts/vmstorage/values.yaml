@@ -84,12 +84,14 @@ readinessProbe:
 
 # Minimal
 resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
   limits:
     cpu: 100m
     memory: 512Mi
-  requests:
-    cpu: 100m
-    memory: 512Mi
+    ephemeral-storage: 64Mi
 
 storage:
   mountPath: /storage

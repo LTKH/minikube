@@ -87,13 +87,14 @@ storage:
   path: /alertmanager
 
 resources: 
+  requests:
+    cpu: 10m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
   limits:
     cpu: 50m
     memory: 64Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
-
+    ephemeral-storage: 64Mi
 podDisruptionBudget:
   enabled: true
   minAvailable: 1

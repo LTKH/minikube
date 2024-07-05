@@ -85,12 +85,14 @@ readinessProbe:
     port: 8480
 
 resources: 
+  requests:
+    cpu: 10m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
   limits:
     cpu: 100m
     memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 256Mi
+    ephemeral-storage: 64Mi
 
 podDisruptionBudget:
   enabled: true

@@ -83,12 +83,14 @@ readinessProbe:
     port: 8481
 
 resources: 
+  requests:
+    cpu: 10m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
   limits:
     cpu: 50m
     memory: 64Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+    ephemeral-storage: 64Mi
 
 cache:
   mountPath: /cache

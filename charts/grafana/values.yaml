@@ -10,7 +10,7 @@ image:
   repository: "grafana/grafana"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "8.5.14"
+  tag: "9.5.19"
 
 imagePullSecrets: []
 nameOverride: "grafana"

@@ -43,7 +43,7 @@ spec:
               name: web
           args:
             - '-httpListenAddr=:{{ .Values.service.port }}'
-            - '-config.file=/mtproxy-conf/mtproxy.yml'
+            - '-configFile=/mtproxy-conf/mtproxy.yml'
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

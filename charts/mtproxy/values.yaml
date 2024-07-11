@@ -69,13 +69,13 @@ ingress:
 livenessProbe:
   httpGet:
     path: /health
-    port: 8084
+    port: 8430
   timeoutSeconds: 5
 
 readinessProbe:
   httpGet:
     path: /health
-    port: 8084
+    port: 8430
   timeoutSeconds: 5
 
 resources:

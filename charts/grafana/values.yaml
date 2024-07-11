@@ -86,10 +86,10 @@ resources:
   limits:
     cpu: 50m
     memory: 128Mi
-    ephemeral-storage: 64Mi
+    ephemeral-storage: 512Mi
 
 storage:
-  size: 1Gi
+  size: 512Mi
 
 autoscaling:
   enabled: false

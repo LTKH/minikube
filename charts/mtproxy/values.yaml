@@ -108,8 +108,8 @@ affinity: {}
 config:
   upstreams:
   - listen_addr: 0.0.0.0:8430
-    cert_file: "config/mtproxy.crt"
-    cert_key: "config/mtproxy.key"
+    #cert_file: "config/mtproxy.crt"
+    #cert_key: "config/mtproxy.key"
     url_map:
     - health_check: /health
       src_paths: [/insert/0/influx.*]

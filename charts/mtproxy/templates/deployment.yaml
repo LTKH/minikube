@@ -42,7 +42,7 @@ spec:
             - containerPort: {{ .Values.service.port }}
               name: web
           args:
-            - '-web.listen-address=:{{ .Values.service.port }}'
+            - '-httpListenAddr=:{{ .Values.service.port }}'
             - '-config.file=/mtproxy-conf/mtproxy.yml'
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}

@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vmalert.fullname" . }}
+  labels:
+    {{- include "vmalert.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "vmalert.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      labels:
+        {{- include "vmalert.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ $.Values.priorityClassName }}
+      {{- end }}
+      serviceAccountName: {{ include "vmalert.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        {{- $values := .Values }}
+        {{- range $k, $server := .Values.servers }}
+        - name: vmalert-{{ $k }}
+          {{- $image := coalesce $values.vmalert.image $values.image }}
+          image: "{{ default $values.image.repository $image.repository }}:{{ default $values.image.tag $image.tag }}"
+          imagePullPolicy: {{ default $values.image.pullPolicy $image.pullPolicy }}
+          securityContext:
+            {{- toYaml ($values.vmalert.securityContext | default $values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml ($values.vmalert.resources | default $values.resources) | nindent 12 }}
+          args:
+            - -httpListenAddr=:{{ $server.port }}
+            - -notifier.tlsInsecureSkipVerify=true
+            {{- range $name := $server.rules }}
+            - -rule=/config/{{ $name }}
+            {{- end }}
+            - -datasource.url={{ $server.datasource.url }}
+            {{- if $server.datasource.basicAuth.username }}
+            - -datasource.basicAuth.username={{ $server.datasource.basicAuth.username }}
+            - -datasource.basicAuth.passwordFile=/secret/password
+            {{- end }}
+            {{- if $server.datasource.bearer }}
+            {{- with $server.datasource.bearer.token }}
+            - -datasource.bearerToken={{ . }}
+            {{- end }}
+            {{- with $server.datasource.bearer.tokenFile }}
+            - -datasource.bearerTokenFile={{ . }}
+            {{- end }}
+            {{- end }}
+            {{- range $url := $server.notifier.urls }}
+            - -notifier.url={{ $url }}
+            {{- end }}
+            {{- if $server.remoteRead }}
+            - -remoteRead.url={{ $server.remoteRead.url }}
+            {{- if $server.remoteRead.basicAuth.username }}
+            - -remoteRead.basicAuth.username={{ $server.remoteRead.basicAuth.username }}
+            - -remoteRead.basicAuth.passwordFile=/secret/password
+            {{- end }}
+            {{- end }}
+            {{- if $server.remoteWrite }}
+            - -remoteWrite.url={{ $server.remoteWrite.url }}
+            {{- if $server.remoteWrite.basicAuth.username  }}
+            - -remoteWrite.basicAuth.username={{ $server.remoteWrite.basicAuth.username }}
+            - -remoteWrite.basicAuth.passwordFile=/secret/password
+            {{- end }}
+            {{- end }}
+          ports:
+            - name: http-{{ $k }}
+              containerPort: {{ $server.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ $server.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ $server.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: alerts-config
+              mountPath: /config
+            - name: secrets
+              mountPath: /secret
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: alerts-config
+          configMap:
+            name: {{ include "vmalert.configname" . }}
+        - name: secrets
+          secret:
+            secretName: mon.mtproxy.vmalert
+            items:
+            - key: password
+              path: password

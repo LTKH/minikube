@@ -45,6 +45,22 @@ spec:
             - '-web.listen-address=:{{ .Values.service.port }}'
             - '-web.dir=/data/web'
             - '-config.file=/alerttrap-conf/alerttrap.yaml'
+          env:
+            {{- $releaseNamespace := .Release.Namespace }}
+            {{- range .Values.secrets.list }}
+            {{- if (lookup "v1" "Secret" $releaseNamespace .) }}
+            - name: '{{ . | replace "." "_" | upper }}_USERNAME'
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: username
+            - name: '{{ . | replace "." "_" | upper }}_PASSWORD'
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: password
+            {{- end }}
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -54,9 +70,28 @@ spec:
               mountPath: /alerttrap-conf
             - name: storage
               mountPath: /storage
+            {{- range $path, $_ :=  .Files.Glob  "custom/*" }}
+            - mountPath: /data/web/templates/custom/{{ base $path }}
+              name: {{ print "alerttrap-" (regexReplaceAll "[._]+" (base $path) "-") }}
+              subPath: {{ base $path }}
+            {{- end }}
+            {{- range .Values.secrets.certs }}
+            - name: '{{ . | replace "." "-" }}'
+              mountPath: /etc/ssl/certs/{{ . }}
+            {{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ include "alerttrap.fullname" . }}-cm
         - name: storage
           emptyDir: {}
+        {{- range $path, $_ := .Files.Glob "custom/*" }}
+        - name: {{ print "alerttrap-" (regexReplaceAll "[._]+" (base $path) "-") }}
+          configMap:
+            name: {{ print "alerttrap-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
+        {{- end }}
+        {{- range .Values.secrets.certs }}
+        - name: '{{ . | replace "." "-" }}'
+          secret:
+            secretName: {{ . }}
+        {{- end }}

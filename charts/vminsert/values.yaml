@@ -91,7 +91,7 @@ resources:
     ephemeral-storage: 64Mi
   limits:
     cpu: 100m
-    memory: 256Mi
+    memory: 512Mi
     ephemeral-storage: 64Mi
 
 podDisruptionBudget:

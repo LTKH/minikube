@@ -10,7 +10,7 @@ image:
   repository: ghcr.io/ltkh/cdserver
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "2.39.0"
 
 imagePullSecrets: []
 nameOverride: "cdserver"
@@ -70,13 +70,15 @@ livenessProbe:
   httpGet:
     path: /-/healthy
     port: 8083
-  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  #initialDelaySeconds: 10
 
 readinessProbe:
   httpGet:
     path: /-/healthy
     port: 8083
-  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  #initialDelaySeconds: 10
 
 resources: 
   requests:
@@ -104,6 +106,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secrets:
+  list: []
 
 config:
   global:

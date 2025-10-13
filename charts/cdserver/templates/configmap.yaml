@@ -6,3 +6,14 @@ metadata:
 data:
   cdserver.yml: |
     {{- toYaml (.Values.cdserver.config | default .Values.config) | nindent 4 }}
+
+{{- range $path, $val := .Files.Glob  "configs/*" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ print "cdserver-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
+data:
+  {{ base $path }}: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}

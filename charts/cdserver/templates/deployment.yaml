@@ -45,6 +45,22 @@ spec:
           args:
             - '-web.listen-address=:{{ .Values.service.port }}'
             - '-config.file=/cdserver-conf/cdserver.yml'
+          env:
+            {{- $releaseNamespace := .Release.Namespace }}
+            {{- range .Values.secrets.list }}
+            {{- if (lookup "v1" "Secret" $releaseNamespace .) }}
+            - name: '{{ . | replace "." "_" | upper }}_USERNAME'
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: username
+            - name: '{{ . | replace "." "_" | upper }}_PASSWORD'
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: password
+            {{- end }}
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -52,6 +68,15 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /cdserver-conf
+            {{- range $path, $_ :=  .Files.Glob  "configs/*" }}
+            - mountPath: /config/{{ base $path }}
+              name: {{ print "cdserver-" (regexReplaceAll "[._]+" (base $path) "-") }}
+              subPath: {{ base $path }}
+            {{- end }}
+            {{- range .Values.secrets.certs }}
+            - name: '{{ . | replace "." "-" }}'
+              mountPath: /etc/ssl/certs/{{ . }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -68,3 +93,13 @@ spec:
         - name: config
           configMap:
             name: {{ include "cdserver.fullname" . }}-cm
+        {{- range $path, $_ :=  .Files.Glob  "configs/*" }}
+        - name: {{ print "cdserver-" (regexReplaceAll "[._]+" (base $path) "-") }}
+          configMap:
+            name: {{ print "cdserver-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
+        {{- end }}
+        {{- range .Values.secrets.certs }}
+        - name: '{{ . | replace "." "-" }}'
+          secret:
+            secretName: {{ . }}
+        {{- end }}

@@ -10,7 +10,7 @@ image:
   repository: ghcr.io/ltkh/netserver
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "4.11.1"
 
 imagePullSecrets: []
 nameOverride: "netserver"
@@ -31,8 +31,8 @@ podAnnotations:
   prometheus.io/port: "8084"
   prometheus.io/path: "/metrics"
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext: 
+  fsGroup: 1000
 
 securityContext:
   capabilities:
@@ -49,6 +49,7 @@ service:
   type: ClusterIP
   port: 8084
   targetPort: 8084
+  peerPort: 8085
 
 ingress:
   enabled: false
@@ -71,12 +72,14 @@ livenessProbe:
     path: /-/healthy
     port: 8084
   timeoutSeconds: 5
+  initialDelaySeconds: 10
 
 readinessProbe:
   httpGet:
     path: /-/healthy
     port: 8084
   timeoutSeconds: 5
+  initialDelaySeconds: 10
 
 resources:
   requests:
@@ -99,11 +102,16 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+storage:
+  size: 500Mi
+
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+initial: {}
 
 config:
   global:
@@ -111,10 +119,10 @@ config:
     cert_key:       ""
 
   db:
-    client:         "cache"
-    limit:          1000000
-    #client:         "sqlite3"
-    #conn_string:    "/storage/netmap.db"
+    #client:         "cache"
+    #limit:          1000000
+    client:         "sqlite3"
+    conn_string:    "/data/netmap.db"
     #username:       "admin"
     #password:       "password"
 

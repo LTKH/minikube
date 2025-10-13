@@ -1,3 +1,6 @@
+{{- if and (.Values.fail) (not .Values.alertmanager.image) }}
+{{- fail "Installation is not allowed in this cluster" }}
+{{- end }}
 {{ if .Values.service.enabled }}
 apiVersion: v1
 kind: Service

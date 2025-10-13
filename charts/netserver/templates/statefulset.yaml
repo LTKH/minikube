@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "netserver.fullname" . }}
+  labels:
+    {{- include "netserver.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "netserver.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "netserver.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      labels:
+        {{- include "netserver.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ $.Values.priorityClassName }}
+      {{- end }}
+      serviceAccountName: {{ include "netserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        {{- $appHeadlessServiceName := include "netserver.fullname" . }}
+        {{- $releaseNamespace := .Release.Namespace }}
+        {{- $clusterDomain := .Values.clusterDomainSuffix | default "cluster.local" }}
+        - name: {{ include "netserver.fullname" . }}
+          {{- $image := coalesce .Values.netserver.image .Values.image }}
+          image: "{{ default .Values.image.repository $image.repository }}:{{ default .Values.image.tag $image.tag }}"
+          imagePullPolicy: {{ default .Values.image.pullPolicy $image.pullPolicy }}
+          securityContext:
+            {{- toYaml (.Values.netserver.securityContext | default .Values.securityContext) | nindent 12 }}
+          resources:
+            {{- toYaml (.Values.netserver.resources | default .Values.resources) | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: web
+          args:
+            - '-listen.client-address=0.0.0.0:{{ .Values.service.port }}'
+            - '-listen.peer-address=0.0.0.0:{{ .Values.service.peerPort }}'
+            - '-initial-cluster={{ .Values.initial.cluster }}'
+            - '-config.file=/netserver-conf/netserver.yml'
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          volumeMounts:
+            - name: netserver-volume
+              mountPath: /netserver-conf
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: netserver-volume
+          configMap:
+            name: netserver-cm
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}

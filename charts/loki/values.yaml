@@ -10,7 +10,7 @@ image:
   repository: grafana/loki
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.6.1"
+  tag: "2.9.8"
 
 imagePullSecrets: []
 nameOverride: "loki"

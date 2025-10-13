@@ -8,3 +8,14 @@ metadata:
 data:
   alerttrap.yaml: |-
     {{- toYaml (mergeOverwrite .Values.config (.Values.alerttrap.config | default dict)) | nindent 4 }}
+
+{{- range $path, $val := .Files.Glob  "custom/*" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ print "alerttrap-" (regexReplaceAll "[._]+" (base $path) "-") "-cm" }}
+data:
+  {{ base $path }}: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}

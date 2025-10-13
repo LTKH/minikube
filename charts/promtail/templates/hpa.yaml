@@ -1,8 +1,9 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if and .Values.deployment.enabled .Values.deployment.autoscaling.enabled }}
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "promtail.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "promtail.labels" . | nindent 4 }}
 spec:
@@ -10,19 +11,21 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ include "promtail.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  {{- with .Values.deployment.autoscaling }}
+  minReplicas: {{ .minReplicas }}
+  maxReplicas: {{ .maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- with .targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        targetAverageUtilization: {{ . }}
     {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- with .targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+        targetAverageUtilization: {{ . }}
     {{- end }}
+  {{- end }}
 {{- end }}

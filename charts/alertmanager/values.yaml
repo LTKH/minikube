@@ -21,7 +21,7 @@ image:
   repository: prom/alertmanager
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.24.0"
+  tag: "v0.28.1"
 
 imagePullSecrets: []
 nameOverride: "alertmanager"

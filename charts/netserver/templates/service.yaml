@@ -1,3 +1,6 @@
+{{- if and (.Values.fail) (not .Values.netserver.image) }}
+{{- fail "Installation is not allowed in this cluster" }}
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,5 +14,9 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
-  selector:
+    - port: {{ .Values.service.peerPort }}
+      targetPort: {{ .Values.service.peerPort }}
+      protocol: TCP
+      name: peer
+  selector: 
     {{- include "netserver.selectorLabels" . | nindent 4 }}

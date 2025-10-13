@@ -76,11 +76,15 @@ livenessProbe:
   httpGet:
     path: /health
     port: 8482
+  periodSeconds: 15
+  timeoutSeconds: 5
 
 readinessProbe:
   httpGet:
     path: /health
     port: 8482
+  periodSeconds: 15
+  timeoutSeconds: 5
 
 # Minimal
 resources:
